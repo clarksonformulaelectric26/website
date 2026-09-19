@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Clarkson Formula Electric Knights</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Barlow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="images/CFEK_LOGO_Transparent.png" />
 </head>
@@ -17,9 +20,37 @@
 
   <div class="hero">
     <div class="hero-content">
-      <h1>Clarkson <span class="accent">Formula Electric</span> Knights</h1>
-      <p>A student team at Clarkson University in Potsdam, NY, designing and building an electric formula-style race car.</p>
-      <div class="scroll-cue">Scroll to explore &darr;</div>
+      <span class="crosshair crosshair--tl" aria-hidden="true">
+        <svg viewBox="0 0 28 28"><circle cx="14" cy="14" r="9"/><line x1="14" y1="0" x2="14" y2="28"/><line x1="0" y1="14" x2="28" y2="14"/></svg>
+      </span>
+      <span class="crosshair crosshair--tr" aria-hidden="true">
+        <svg viewBox="0 0 28 28"><circle cx="14" cy="14" r="9"/><line x1="14" y1="0" x2="14" y2="28"/><line x1="0" y1="14" x2="28" y2="14"/></svg>
+      </span>
+      <span class="crosshair crosshair--bl" aria-hidden="true">
+        <svg viewBox="0 0 28 28"><circle cx="14" cy="14" r="9"/><line x1="14" y1="0" x2="14" y2="28"/><line x1="0" y1="14" x2="28" y2="14"/></svg>
+      </span>
+      <span class="crosshair crosshair--br" aria-hidden="true">
+        <svg viewBox="0 0 28 28"><circle cx="14" cy="14" r="9"/><line x1="14" y1="0" x2="14" y2="28"/><line x1="0" y1="14" x2="28" y2="14"/></svg>
+      </span>
+
+      <div class="hazard-tag" aria-hidden="true"><span>Caution &mdash; High Voltage</span></div>
+
+      <div class="hero-copy">
+        <h1>Clarkson <span class="accent">Formula Electric</span> Knights</h1>
+        <p>A student team at Clarkson University in Potsdam, NY, designing and building an electric formula-style race car.</p>
+      </div>
+
+      <dl class="title-block">
+        <div><dt>Title</dt><dd>CFEK Home</dd></div>
+        <div><dt>Sheet</dt><dd>001</dd></div>
+        <div><dt>Scale</dt><dd>1:1</dd></div>
+        <div><dt>Location</dt><dd>Potsdam, NY</dd></div>
+      </dl>
+
+      <a href="#subteams" class="scroll-cue">
+        <span>Scroll</span>
+        <svg viewBox="0 0 16 10" aria-hidden="true"><polyline points="1,1 8,9 15,1"/></svg>
+      </a>
     </div>
   </div>
   <div class="hero-overlay"></div>
@@ -34,51 +65,63 @@
 
       <div class="card-grid">
         <a class="subteam-card" href="high-voltage.html">
-          <div class="card-image-placeholder">Image Coming Soon</div>
+          <span class="spec-code">HV&middot;01</span>
+          <img class="card-image" src="images/high_voltage/HVpreview.jpg" alt="HV+ and HV- high-voltage connectors on the accumulator, with a high-voltage warning label" loading="lazy" />
           <h3>High Voltage</h3>
         </a>
         <a class="subteam-card" href="low-voltage.html">
-          <div class="card-image-placeholder">Image Coming Soon</div>
+          <span class="spec-code">LV&middot;02</span>
+          <div class="card-image-placeholder">Photo Pending</div>
           <h3>Low Voltage</h3>
         </a>
         <a class="subteam-card" href="chassis.html">
-          <div class="card-image-placeholder">Image Coming Soon</div>
+          <span class="spec-code">CH&middot;03</span>
+          <div class="card-image-placeholder">Photo Pending</div>
           <h3>Chassis</h3>
         </a>
         <a class="subteam-card" href="drivetrain.html">
-          <div class="card-image-placeholder">Image Coming Soon</div>
+          <span class="spec-code">DT&middot;04</span>
+          <div class="card-image-placeholder">Photo Pending</div>
           <h3>Drivetrain</h3>
         </a>
         <a class="subteam-card" href="suspension.html">
-          <div class="card-image-placeholder">Image Coming Soon</div>
+          <span class="spec-code">SU&middot;05</span>
+          <div class="card-image-placeholder">Photo Pending</div>
           <h3>Suspension</h3>
         </a>
         <a class="subteam-card" href="vehicle-dynamics.html">
-          <div class="card-image-placeholder">Image Coming Soon</div>
+          <span class="spec-code">VD&middot;06</span>
+          <div class="card-image-placeholder">Photo Pending</div>
           <h3>Vehicle Dynamics</h3>
         </a>
         <a class="subteam-card" href="brakes.html">
-          <div class="card-image-placeholder">Image Coming Soon</div>
+          <span class="spec-code">BR&middot;07</span>
+          <div class="card-image-placeholder">Photo Pending</div>
           <h3>Brakes</h3>
         </a>
         <a class="subteam-card" href="cooling.html">
-          <div class="card-image-placeholder">Image Coming Soon</div>
+          <span class="spec-code">CL&middot;08</span>
+          <div class="card-image-placeholder">Photo Pending</div>
           <h3>Cooling</h3>
         </a>
         <a class="subteam-card" href="ergonomics.html">
-          <div class="card-image-placeholder">Image Coming Soon</div>
+          <span class="spec-code">ER&middot;09</span>
+          <div class="card-image-placeholder">Photo Pending</div>
           <h3>Ergo</h3>
         </a>
         <a class="subteam-card" href="aerodynamics.html">
-          <div class="card-image-placeholder">Image Coming Soon</div>
+          <span class="spec-code">AE&middot;10</span>
+          <div class="card-image-placeholder">Photo Pending</div>
           <h3>Aerodynamics</h3>
         </a>
         <a class="subteam-card" href="composites.html">
-          <div class="card-image-placeholder">Image Coming Soon</div>
+          <span class="spec-code">CM&middot;11</span>
+          <div class="card-image-placeholder">Photo Pending</div>
           <h3>Composites</h3>
         </a>
         <a class="subteam-card" href="business.html">
-          <div class="card-image-placeholder">Image Coming Soon</div>
+          <span class="spec-code">BU&middot;12</span>
+          <div class="card-image-placeholder">Photo Pending</div>
           <h3>Business</h3>
         </a>
       </div>

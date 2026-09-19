@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>High Voltage &mdash; Clarkson Formula Electric Knights</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Barlow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="images/CFEK_LOGO_Transparent.png" />
 </head>
@@ -16,12 +19,93 @@
   </header>
 
   <section class="subteam-hero">
+    <span class="hero-tag">HV &middot; 01</span>
     <h1>High Voltage</h1>
-    <p>Subteam page &mdash; content coming soon.</p>
+    <p>Battery pack design, power electronics, and everything that keeps the car's high-voltage systems safe.</p>
   </section>
 
+  <div class="content-section">
+    <p>The High Voltage subteam designs and builds the car's battery pack and how it interfaces
+      with the rest of the vehicle &mdash; speccing current-carrying capacities, finding the
+      right voltage-and-current ratios, and validating that the pack is safe to run. Every PCB
+      in the system, from cell-monitoring boards to pack control electronics, is designed,
+      assembled, and tested in house.</p>
+  </div>
+
+  <div class="content-section">
+    <div class="section-header">
+      <h2>The 2026 Pack</h2>
+      <span class="rev-tag rev-tag--current">2026 &middot; In Development</span>
+    </div>
+
+    <dl class="spec-sheet">
+      <div><dt>Cell</dt><dd>Molicel 21700 P45B</dd></div>
+      <div><dt>Architecture</dt><dd>96s4p</dd></div>
+      <div><dt>Pack Voltage</dt><dd>400V</dd></div>
+      <div><dt>Continuous Current</dt><dd>180A DC</dd></div>
+    </dl>
+
+    <p>Right now the team's focus is fusible link design and cell stackup &mdash; sizing each
+      fusible link so it protects the pack without nuisance-tripping, and figuring out how all
+      384 cells (96 in series, 4 in parallel) are mechanically arranged and secured.</p>
+
+    <figure class="media-plate">
+      <img src="images/high_voltage/FusibleLinksSim.png" alt="Ansys coupled-field transient thermal simulation of a fusible link, showing a temperature gradient concentrated at the link's narrow neck" loading="lazy" />
+      <figcaption><span class="fig-number">Fig. 01</span> Coupled-field transient thermal simulation of a fusible link, showing temperature at the link's narrowest cross-section under fault current. Ansys 2026 R1.</figcaption>
+    </figure>
+
+    <figure class="media-plate">
+      <div class="media-embed">
+        <iframe src="https://www.youtube.com/embed/7Vpn-elHoIk" title="Fusible link testing" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <figcaption><span class="fig-number">Fig. 02</span> Fusible link testing &mdash; validating simulated behavior against real hardware.</figcaption>
+    </figure>
+  </div>
+
+  <div class="content-section">
+    <div class="section-header">
+      <h2>Motor Controller</h2>
+    </div>
+
+    <p>Both the 2025 and 2026 cars share the same motor controller: a Cascadia Motion PM100DX.
+      Its nameplate is rated for 100&ndash;360 Vdc input and 300A output.</p>
+
+    <figure class="media-plate">
+      <img src="images/high_voltage/batteryandmotorcontroller.jpg" alt="Cascadia Motion PM100DX motor controller mounted in the chassis, with orange high-voltage cabling and hazard warning labels" loading="lazy" />
+      <figcaption><span class="fig-number">Fig. 03</span> Cascadia Motion PM100DX, mounted in the chassis.</figcaption>
+    </figure>
+  </div>
+
+  <div class="content-section">
+    <div class="section-header">
+      <h2>The 2025 Pack</h2>
+      <span class="rev-tag rev-tag--legacy">2025 &middot; Previous Car</span>
+    </div>
+
+    <dl class="spec-sheet">
+      <div><dt>Cell</dt><dd>Melasta pouch cell</dd></div>
+      <div><dt>Architecture</dt><dd>72s1p</dd></div>
+      <div><dt>Pack Voltage</dt><dd>300V</dd></div>
+      <div><dt>Continuous Current</dt><dd>250A DC</dd></div>
+    </dl>
+
+    <div class="media-grid">
+      <figure class="media-plate">
+        <img src="images/high_voltage/moduleopen.jpg" alt="An opened battery module showing the machined clamps that secure and connect the pouch cells' tabs" loading="lazy" />
+        <figcaption><span class="fig-number">Fig. 04</span> Battery module assembly &mdash; the machined clamps that secure and connect the pouch cells' tabs.</figcaption>
+      </figure>
+      <figure class="media-plate">
+        <img src="images/high_voltage/Accumulator.jpg" alt="The accumulator container's internal electronics, including contactors, fusing, and battery-management boards" loading="lazy" />
+        <figcaption><span class="fig-number">Fig. 05</span> Accumulator container &mdash; the pack's contactors, fusing, and battery-management electronics.</figcaption>
+      </figure>
+      <figure class="media-plate">
+        <img src="images/high_voltage/maintenanceplugs.jpg" alt="Maintenance-plug hardware, machined from metal and coated in plastic for electrical isolation" loading="lazy" />
+        <figcaption><span class="fig-number">Fig. 06</span> Maintenance-plug hardware, machined in-house from metal and coated in plastic for electrical isolation.</figcaption>
+      </figure>
+    </div>
+  </div>
+
   <div class="placeholder-body">
-    <p>This page is under construction. Check back soon for details on the High Voltage subteam.</p>
     <a class="back-link" href="index.html#subteams">&larr; Back to Subteams</a>
   </div>
 

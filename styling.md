@@ -61,6 +61,14 @@ borders, muted text, dividers).
   before adding an arbitrary hex value.
 - All colors above are implemented as CSS custom properties in [`styles.css`](styles.css)
   (`:root`). Reference the variable, not a hardcoded hex, when styling new components.
+- Current site implementation: page backgrounds (`--bg`) use the darker Clarkson green
+  (`--clarkson-green-dark`), while the header bar (`--bg-deep`, via `.site-header.solid`)
+  uses the lighter Clarkson green (`--clarkson-green`) so it reads as a distinct band
+  above the page. The same `--bg-deep` → `--bg` pairing drives the subteam-page hero
+  gradient, keeping it visually consistent with the header. `--clarkson-gold` is the
+  main secondary/accent color — link hovers, card borders, and buttons all key off gold.
+  Text is white/near-white (`--text`, `--text-muted`) for contrast against the green.
+  New components should follow this same pattern rather than introducing neutral grays.
 
 ## Typography
 

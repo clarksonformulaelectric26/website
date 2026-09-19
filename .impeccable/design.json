@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-19T00:00:00Z",
+  "title": "Design System: Clarkson Formula Electric Knights",
+  "extensions": {
+    "colorMeta": {
+      "clarkson-green": { "role": "primary", "displayName": "Clarkson Green", "canonical": "#004e42" },
+      "clarkson-green-dark": { "role": "primary", "displayName": "Clarkson Green Dark", "canonical": "#00332b" },
+      "clarkson-gold": { "role": "secondary", "displayName": "Hazard Gold", "canonical": "#ffcd00" },
+      "ink": { "role": "neutral", "displayName": "Chassis Ink", "canonical": "#0a0f0c" },
+      "panel": { "role": "neutral", "displayName": "Panel", "canonical": "#101c17" },
+      "panel-raised": { "role": "neutral", "displayName": "Panel Raised", "canonical": "#142620" },
+      "text": { "role": "neutral", "displayName": "Warm Plate White", "canonical": "#f3f0e6" },
+      "text-muted": { "role": "neutral", "displayName": "Signal Sage", "canonical": "#b3c7b9" },
+      "hazard-black": { "role": "neutral", "displayName": "Hazard Black", "canonical": "#050505" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero H1, subteam-page H1, section headings, card titles. Always uppercase Oswald." },
+      "body": { "displayName": "Body", "purpose": "Hero paragraph, placeholder body copy. Always sentence case." },
+      "label": { "displayName": "Label/Mono", "purpose": "Nav links, spec-code chips, drafting title block, footer. The one place uppercase is earned." }
+    },
+    "shadows": [
+      { "name": "hazard-tag", "value": "0 6px 18px rgba(0, 0, 0, 0.45)", "purpose": "Under the diagonal hazard-tag ribbon only, since it reads as a physically bolted-on object." }
+    ],
+    "motion": [
+      { "name": "ease-entrance", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Hero frame/crosshair/hazard-tag/title-block entrance and card reveal." }
+    ],
+    "breakpoints": [
+      { "name": "title-block-hide", "value": "720px" },
+      { "name": "mobile", "value": "640px" },
+      { "name": "nav-compact", "value": "480px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Spec Plate Card",
+      "kind": "card",
+      "refersTo": "card-subteam",
+      "description": "One subteam per card: rivet-dot corners, a gold-on-black spec-code chip, a dot-grid 'photo pending' plate, and a stenciled uppercase title.",
+      "html": "<a class=\"ds-card\" href=\"#\">\n  <span class=\"ds-card-code\">HV&middot;01</span>\n  <div class=\"ds-card-plate\">Photo Pending</div>\n  <h3 class=\"ds-card-title\">High Voltage</h3>\n</a>",
+      "css": ".ds-card { position: relative; display: block; background: #101c17; border: 1px solid rgba(226,232,227,0.14); text-decoration: none; color: inherit; background-image: radial-gradient(circle at 10px 10px, rgba(226,232,227,0.4) 1.6px, transparent 2px), radial-gradient(circle at calc(100% - 10px) 10px, rgba(226,232,227,0.4) 1.6px, transparent 2px), radial-gradient(circle at 10px calc(100% - 10px), rgba(226,232,227,0.4) 1.6px, transparent 2px), radial-gradient(circle at calc(100% - 10px) calc(100% - 10px), rgba(226,232,227,0.4) 1.6px, transparent 2px); transition: transform 0.2s ease, border-color 0.2s ease; } .ds-card:hover { transform: translateY(-4px); border-color: #ffcd00; } .ds-card-code { position: absolute; top: 0; left: 0; font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.05em; color: #ffcd00; background: rgba(5,5,5,0.75); padding: 3px 9px 3px 7px; border-bottom-right-radius: 3px; } .ds-card:hover .ds-card-code { background: #ffcd00; color: #050505; } .ds-card-plate { aspect-ratio: 16/9; width: 100%; background-image: radial-gradient(circle, rgba(226,232,227,0.14) 1px, transparent 1.4px); background-size: 16px 16px; background-color: #142620; display: flex; align-items: center; justify-content: center; color: #b3c7b9; font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; } .ds-card-title { font-family: Oswald, sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; margin: 0; padding: 1rem 1.1rem; font-size: 1.05rem; color: #f3f0e6; }"
+    },
+    {
+      "name": "Back Button",
+      "kind": "button",
+      "refersTo": "button-back",
+      "description": "Ruled-border text button, mono uppercase, gold on hover/focus.",
+      "html": "<a class=\"ds-btn-back\" href=\"#\">&larr; Back to Subteams</a>",
+      "css": ".ds-btn-back { display: inline-block; padding: 0.6rem 1.2rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; letter-spacing: 0.05em; text-transform: uppercase; border: 1px solid rgba(226,232,227,0.32); color: #f3f0e6; text-decoration: none; transition: border-color 0.2s ease, color 0.2s ease; } .ds-btn-back:hover, .ds-btn-back:focus-visible { border-color: #ffcd00; color: #ffcd00; }"
+    },
+    {
+      "name": "Hazard Tag",
+      "kind": "custom",
+      "description": "Diagonal ribbon fixed to the hero's top-right corner: gold fill, repeating black-stripe trim, short mono caution label. The system's signature component.",
+      "html": "<div class=\"ds-hazard-tag\"><span>Caution &mdash; High Voltage</span></div>",
+      "css": ".ds-hazard-tag { position: relative; width: 260px; padding: 9px 0; background: #ffcd00; transform: rotate(45deg); box-shadow: 0 6px 18px rgba(0,0,0,0.45); } .ds-hazard-tag::before, .ds-hazard-tag::after { content: ''; position: absolute; left: 0; right: 0; height: 6px; background: repeating-linear-gradient(-45deg, #050505 0 8px, transparent 8px 16px); } .ds-hazard-tag::before { top: 0; } .ds-hazard-tag::after { bottom: 0; } .ds-hazard-tag span { display: block; font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: #050505; text-align: center; }"
+    },
+    {
+      "name": "Drafting Title Block",
+      "kind": "custom",
+      "description": "Bottom-left hero panel styled like a real drafting sheet's title block: Title / Sheet / Scale / Location in uppercase mono, gold labels over warm-white values.",
+      "html": "<dl class=\"ds-title-block\">\n  <div><dt>Title</dt><dd>CFEK Home</dd></div>\n  <div><dt>Sheet</dt><dd>001</dd></div>\n  <div><dt>Scale</dt><dd>1:1</dd></div>\n  <div><dt>Location</dt><dd>Potsdam, NY</dd></div>\n</dl>",
+      "css": ".ds-title-block { margin: 0; padding: 0.7rem 1rem; background: rgba(8,12,10,0.82); border: 1px solid rgba(226,232,227,0.32); font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; letter-spacing: 0.03em; display: grid; grid-template-columns: repeat(4, auto); gap: 0 1.1rem; } .ds-title-block > div { display: flex; flex-direction: column; gap: 2px; } .ds-title-block dt { color: #ffcd00; text-transform: uppercase; } .ds-title-block dd { margin: 0; color: #f3f0e6; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Hazard-Taped Blueprint",
+    "overview": "The site reads as a working engineering document that got a warning placard bolted onto it — a real spec sheet, not a marketing template. It refuses the generic dark SaaS-gradient-hero-over-glass-cards arrangement that AI-generated interfaces default to by borrowing its material world from two real things a Formula SAE Electric team actually handles: OSHA-style high-voltage warning signage and technical blueprint drafting. Ground is near-black chassis ink, not a flat neutral; Clarkson green carries structural bands; Clarkson gold is promoted to a real hazard-stripe accent doing visible work rather than a soft hover tint.\n\nThe system is deliberately flat and line-drawn rather than soft and glassy: ruled borders, corner registration crosshairs, rivet-dot corners, and diagonal hazard-tape trim carry the texture that gradients and blur would otherwise be reached for.",
+    "keyCharacteristics": [
+      "Near-black chassis-dark ground with the two Clarkson greens doing structural work, gold reserved for real hazard/accent duty.",
+      "Flat, line-drawn depth (ruled borders, crosshairs, rivets) — no glass, no soft shadows standing in for structure.",
+      "Condensed stenciled display type (Oswald) paired with a signage-lineage body face (Barlow) and a narrowly-scoped mono (IBM Plex Mono) for spec/dimension labels only.",
+      "Every subteam is a numbered 'spec plate,' not a generic icon card."
+    ],
+    "rules": [
+      { "name": "The Two-Green Rule", "body": "Structural bands (the solid header, footer border, subteam-page hero gradient) use only Clarkson Green and Clarkson Green Dark — never a third arbitrary dark neutral invented for convenience.", "section": "colors" },
+      { "name": "The Hazard Accent Rule", "body": "Gold only appears as a real hazard/accent device — a ribbon, a spec-code chip, a hover state, an emphasized word — never as a decorative gradient or a low-opacity tint standing in for 'brand color.'", "section": "colors" },
+      { "name": "The Sentence-Case Body Rule", "body": "Any text long enough to be a sentence stays in sentence case even when set in the mono label font. Uppercase is reserved for labels under roughly a phrase in length.", "section": "typography" },
+      { "name": "The Flat Plate Rule", "body": "Cards, panels, and the title block sit flush with their background at rest — no ambient shadow. The only motion is a hairline border brightening to gold and a slight lift on hover.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep gold's use rare and load-bearing (ribbon, spec codes, hover, one emphasized headline word) — its rarity is what makes it read as a hazard color rather than a brand tint.",
+      "Do use Oswald uppercase for anything that is a label or a heading; use Barlow sentence-case for anything a visitor reads as a sentence.",
+      "Do keep new components square-cornered and line-drawn (rivets, crosshairs, hairline borders) rather than reaching for radius + shadow.",
+      "Do reuse the spec-code convention (XX·NN) for any new numbered/tagged item."
+    ],
+    "donts": [
+      "Don't add glass/blur panels or soft glowing shadows — this world is flat and ruled, not glassy.",
+      "Don't introduce a third dark neutral for backgrounds.",
+      "Don't set long-form body copy in uppercase, even in the mono label font.",
+      "Don't use repeating-stripe gradients as generic surface decoration; the diagonal hazard-stripe trim is earned specifically because it depicts real hazard tape."
+    ]
+  }
+}
