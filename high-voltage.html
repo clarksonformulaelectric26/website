@@ -18,7 +18,8 @@
     </nav>
   </header>
 
-  <section class="subteam-hero">
+  <section class="subteam-hero has-image">
+    <img class="subteam-hero-image" src="images/high_voltage/HVpreview.jpg" width="2297" height="1750" alt="HV+ and HV- high-voltage connectors on the accumulator, with a high-voltage warning label" loading="lazy" />
     <span class="hero-tag">HV &middot; 01</span>
     <h1>High Voltage</h1>
     <p>Battery pack design, power electronics, and everything that keeps the car's high-voltage systems safe.</p>
@@ -50,7 +51,7 @@
       384 cells (96 in series, 4 in parallel) are mechanically arranged and secured.</p>
 
     <figure class="media-plate">
-      <img src="images/high_voltage/FusibleLinksSim.png" alt="Ansys coupled-field transient thermal simulation of a fusible link, showing a temperature gradient concentrated at the link's narrow neck" loading="lazy" />
+      <img src="images/high_voltage/FusibleLinksSim.png" width="1567" height="572" alt="Ansys coupled-field transient thermal simulation of a fusible link, showing a temperature gradient concentrated at the link's narrow neck" loading="lazy" />
       <figcaption><span class="fig-number">Fig. 01</span> Coupled-field transient thermal simulation of a fusible link, showing temperature at the link's narrowest cross-section under fault current. Ansys 2026 R1.</figcaption>
     </figure>
 
@@ -59,20 +60,6 @@
         <iframe src="https://www.youtube.com/embed/7Vpn-elHoIk" title="Fusible link testing" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       </div>
       <figcaption><span class="fig-number">Fig. 02</span> Fusible link testing &mdash; validating simulated behavior against real hardware.</figcaption>
-    </figure>
-  </div>
-
-  <div class="content-section">
-    <div class="section-header">
-      <h2>Motor Controller</h2>
-    </div>
-
-    <p>Both the 2025 and 2026 cars share the same motor controller: a Cascadia Motion PM100DX.
-      Its nameplate is rated for 100&ndash;360 Vdc input and 300A output.</p>
-
-    <figure class="media-plate">
-      <img src="images/high_voltage/batteryandmotorcontroller.jpg" alt="Cascadia Motion PM100DX motor controller mounted in the chassis, with orange high-voltage cabling and hazard warning labels" loading="lazy" />
-      <figcaption><span class="fig-number">Fig. 03</span> Cascadia Motion PM100DX, mounted in the chassis.</figcaption>
     </figure>
   </div>
 
@@ -92,17 +79,31 @@
     <div class="media-grid">
       <figure class="media-plate">
         <img src="images/high_voltage/moduleopen.jpg" alt="An opened battery module showing the machined clamps that secure and connect the pouch cells' tabs" loading="lazy" />
-        <figcaption><span class="fig-number">Fig. 04</span> Battery module assembly &mdash; the machined clamps that secure and connect the pouch cells' tabs.</figcaption>
+        <figcaption><span class="fig-number">Fig. 03</span> Battery module assembly &mdash; the machined clamps that secure and connect the pouch cells' tabs.</figcaption>
       </figure>
       <figure class="media-plate">
         <img src="images/high_voltage/Accumulator.jpg" alt="The accumulator container's internal electronics, including contactors, fusing, and battery-management boards" loading="lazy" />
-        <figcaption><span class="fig-number">Fig. 05</span> Accumulator container &mdash; the pack's contactors, fusing, and battery-management electronics.</figcaption>
+        <figcaption><span class="fig-number">Fig. 04</span> Accumulator container &mdash; the pack's contactors, fusing, and battery-management electronics.</figcaption>
       </figure>
       <figure class="media-plate">
         <img src="images/high_voltage/maintenanceplugs.jpg" alt="Maintenance-plug hardware, machined from metal and coated in plastic for electrical isolation" loading="lazy" />
-        <figcaption><span class="fig-number">Fig. 06</span> Maintenance-plug hardware, machined in-house from metal and coated in plastic for electrical isolation.</figcaption>
+        <figcaption><span class="fig-number">Fig. 05</span> Maintenance-plug hardware, machined in-house from metal and coated in plastic for electrical isolation.</figcaption>
       </figure>
     </div>
+  </div>
+
+  <div class="content-section">
+    <div class="section-header">
+      <h2>Motor Controller</h2>
+    </div>
+
+    <p>Both the 2025 and 2026 cars share the same motor controller: a Cascadia Motion PM100DX.
+      Its nameplate is rated for 100&ndash;360 Vdc input and 300A output.</p>
+
+    <figure class="media-plate media-plate--crop">
+      <img src="images/high_voltage/batteryandmotorcontroller.jpg" width="3024" height="4032" alt="Cascadia Motion PM100DX motor controller mounted in the chassis, with orange high-voltage cabling and hazard warning labels" loading="lazy" />
+      <figcaption><span class="fig-number">Fig. 06</span> Cascadia Motion PM100DX, mounted in the chassis.</figcaption>
+    </figure>
   </div>
 
   <div class="placeholder-body">
@@ -113,6 +114,7 @@
     &copy; <span id="year"></span> Clarkson Formula Electric Knights &mdash; Clarkson University
   </footer>
 
+  <script src="script.js"></script>
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
   </script>

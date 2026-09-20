@@ -18,13 +18,111 @@
     </nav>
   </header>
 
-  <section class="subteam-hero">
+  <section class="subteam-hero has-image">
+    <img class="subteam-hero-image crop-upper" src="images/low_voltage/dashboard.jpg" width="3024" height="4032" alt="The dash display mounted in the car's steering wheel, lit up with voltage, percentage, speed and torque readouts" loading="lazy" />
+    <span class="hero-tag">LV &middot; 02</span>
     <h1>Low Voltage</h1>
-    <p>Subteam page &mdash; content coming soon.</p>
+    <p>Every PCB on the car, the harness that connects them, and the bus they talk over.</p>
   </section>
 
+  <div class="content-section">
+    <p>The Low Voltage subteam designs and manufactures every PCB on the car &mdash; the ECU,
+      the dash, the pedalbox, and more. The wiring harness that ties those boards to the rest of
+      the vehicle is built from scratch, and the CAN bus communications running across it are set
+      up and tuned by the team as well.</p>
+
+    <dl class="spec-sheet">
+      <div><dt>Boards</dt><dd>ECU, Dash, Pedalbox, and more</dd></div>
+      <div><dt>Harness</dt><dd>Built from scratch</dd></div>
+      <div><dt>Vehicle Network</dt><dd>CAN bus</dd></div>
+    </dl>
+  </div>
+
+  <div class="content-section">
+    <div class="section-header">
+      <h2>The ECU</h2>
+    </div>
+
+    <p>The ECU is the arbitrator of whether the car drives. It is the board that makes the final
+      call on whether the car is allowed to move, and like every other board on the car, it is
+      designed and built in house.</p>
+
+    <figure class="media-plate media-plate--cutout">
+      <div class="cutout-field">
+        <img src="images/low_voltage/ECUtransparent.png" width="1800" height="2400" alt="The ECU board photographed against a transparent background &mdash; a purple PCB carrying a microcontroller module, a microSD card slot, relays, blade fuses, and a multi-pin board-edge connector" loading="lazy" />
+      </div>
+      <figcaption><span class="fig-number">Fig. 01</span> The ECU, designed and assembled in house.</figcaption>
+    </figure>
+  </div>
+
+  <div class="content-section">
+    <div class="section-header">
+      <h2>The Dash</h2>
+    </div>
+
+    <p>The dash is what the driver actually reads while the car is running &mdash; the board's
+      whole job is to put the information the driver needs in front of them. It goes through the
+      same path as the rest of the team's electronics: designed in house, brought up on the bench,
+      then mounted in the car.</p>
+
+    <figure class="media-plate media-plate--crop">
+      <img class="crop-mid" src="images/low_voltage/dashdevelopment.jpg" width="3024" height="4032" alt="The bare dash PCB on a cutting mat during development, wired to a TFT display showing the CFEK logo, with alligator clips and a USB cable attached" loading="lazy" />
+      <figcaption><span class="fig-number">Fig. 02</span> The dash in development, driving its display on the bench.</figcaption>
+    </figure>
+  </div>
+
+  <div class="content-section">
+    <div class="section-header">
+      <h2>The Pedalbox</h2>
+    </div>
+
+    <p>The pedalbox board reads the driver's pedal positions and handles datalogging &mdash; and
+      datalogging is the area getting the biggest push on the 2026 car.</p>
+  </div>
+
+  <div class="content-section">
+    <div class="section-header">
+      <h2>Harness and CAN Bus</h2>
+    </div>
+
+    <p>The wiring harness is made from scratch rather than bought as an assembly. On top of it,
+      the team sets up the CAN bus communications between all of the boards and components in the
+      car, so the ECU, the dash, the pedalbox, and everything else share one network instead of a
+      pile of point-to-point wiring.</p>
+  </div>
+
+  <div class="content-section">
+    <div class="section-header">
+      <h2>Status Indicators</h2>
+    </div>
+
+    <p>Two status lights sit on the roll hoop, where anyone standing near the car can read them:
+      the TSSI and the ready-to-move light. The TSSI is made in house.</p>
+
+    <figure class="media-plate">
+      <img src="images/low_voltage/tssi_rml.jpg" width="4032" height="3024" alt="The car's roll hoop from behind, with a lit green indicator and an amber lens mounted to a bracket between the hoop's uprights" loading="lazy" />
+      <figcaption><span class="fig-number">Fig. 03</span> The TSSI and ready-to-move lights, mounted on the roll hoop.</figcaption>
+    </figure>
+  </div>
+
+  <div class="content-section">
+    <div class="section-header">
+      <h2>Datalogging</h2>
+      <span class="rev-tag rev-tag--current">2026 &middot; In Development</span>
+    </div>
+
+    <dl class="spec-sheet">
+      <div><dt>Suspension</dt><dd>Linear potentiometers</dd></div>
+      <div><dt>Acceleration</dt><dd>G-force measurement</dd></div>
+    </dl>
+
+    <p>On the new car, Low Voltage is taking datalogging to the extreme. Linear potentiometers are
+      going on the suspension, g-force measurement is being added, and a good deal more beyond
+      that &mdash; the goal being that far more of what the car does on track comes back as data
+      the team can actually go review afterward.</p>
+  </div>
+
   <div class="placeholder-body">
-    <p>This page is under construction. Check back soon for details on the Low Voltage subteam.</p>
     <a class="back-link" href="index.html#subteams">&larr; Back to Subteams</a>
   </div>
 
@@ -32,6 +130,7 @@
     &copy; <span id="year"></span> Clarkson Formula Electric Knights &mdash; Clarkson University
   </footer>
 
+  <script src="script.js"></script>
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
   </script>

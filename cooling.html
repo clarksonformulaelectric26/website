@@ -18,13 +18,102 @@
     </nav>
   </header>
 
-  <section class="subteam-hero">
+  <section class="subteam-hero has-image">
+    <img class="subteam-hero-image crop-upper" src="images/cooling/swirlpot.jpg" width="3024" height="4032" alt="The welded aluminum swirl pot mounted in the car, topped with a pressure cap and connected to the coolant hoses by worm-drive clamps" loading="lazy" />
+    <span class="hero-tag">CL &middot; 08</span>
     <h1>Cooling</h1>
-    <p>Subteam page &mdash; content coming soon.</p>
+    <p>The liquid loop that keeps the motor and motor controller in their temperature window.</p>
   </section>
 
+  <div class="content-section">
+    <p>The Cooling subteam owns the car's liquid loop &mdash; the radiator, the pump, the swirl
+      pot, the hoses that connect them, and the catch can on the end of it. The scope is
+      deliberately narrow. The loop cools the motor controller and the motor, and nothing else on
+      the car runs on it.</p>
+  </div>
+
+  <div class="content-section">
+    <div class="section-header">
+      <h2>The Loop</h2>
+    </div>
+
+    <p>One circuit serves two components. The pump moves coolant through the motor controller and
+      the motor, out to the radiator where the heat leaves the car, and back around. Most of the
+      work is packaging. The loop has to thread past high-voltage cabling, the drivetrain, and the
+      chassis tubes without kinking a hose or blocking access to anything behind it.</p>
+
+    <figure class="media-plate media-plate--crop">
+      <img class="crop-mid" src="images/cooling/coolingloop.jpg" width="3024" height="4032" alt="Overhead view of the rear of the car showing black coolant hoses routed between the swirl pot, the pump, and the powertrain hardware, alongside orange high-voltage cabling" loading="lazy" />
+      <figcaption><span class="fig-number">Fig. 01</span> The loop in the car, threaded between the powertrain hardware and the high-voltage cabling.</figcaption>
+    </figure>
+  </div>
+
+  <div class="content-section">
+    <div class="section-header">
+      <h2>The Swirl Pot</h2>
+    </div>
+
+    <dl class="spec-sheet">
+      <div><dt>Design</dt><dd>In house</dd></div>
+      <div><dt>Manufacture</dt><dd>In house</dd></div>
+      <div><dt>Construction</dt><dd>Welded aluminum</dd></div>
+    </dl>
+
+    <p>The swirl pot at the top of this page is completely designed and manufactured in house,
+      welded up from aluminum and fitted with a pressure cap. It gives air entrained in the coolant
+      somewhere to separate out instead of circulating back through the motor and the controller,
+      and it is where the loop gets filled and where it vents when pressure climbs.</p>
+  </div>
+
+  <div class="content-section">
+    <div class="section-header">
+      <h2>The Rest of the Loop</h2>
+    </div>
+
+    <p>Around the pot sit the three parts that do the rest of the work: the radiator hanging
+      outboard in the airflow, the pump that keeps coolant moving regardless of how fast the car
+      happens to be going, and the catch can that takes whatever the pressure cap releases.</p>
+
+    <div class="media-grid">
+      <figure class="media-plate">
+        <img src="images/cooling/radiator.jpg" alt="An aluminum radiator with welded end tanks and a pressure cap, bolted outboard at the side of the car" loading="lazy" />
+        <figcaption><span class="fig-number">Fig. 02</span> The radiator, mounted outboard at the side of the car.</figcaption>
+      </figure>
+      <figure class="media-plate">
+        <img src="images/cooling/pump.jpg" alt="The coolant pump plumbed inline in the black coolant hose, with worm-drive clamps safety-wired in place" loading="lazy" />
+        <figcaption><span class="fig-number">Fig. 03</span> The pump, plumbed inline and safety-wired.</figcaption>
+      </figure>
+      <figure class="media-plate">
+        <img src="images/cooling/catchcan.jpg" alt="A dark plastic catch can clamped to a chassis tube with two hose clamps, with an overflow line running into its cap" loading="lazy" />
+        <figcaption><span class="fig-number">Fig. 04</span> The catch can, clamped to a chassis tube beside the drivetrain.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="content-section">
+    <div class="section-header">
+      <h2>The Pack Stays Off the Loop</h2>
+    </div>
+
+    <p>The battery pack is not plumbed into any of this. It is cooled completely passively, with
+      no coolant, no pump, and no forced air, which keeps a large amount of plumbing, mass, and
+      failure modes out of the accumulator entirely. It also means the pack's thermal behavior has
+      to be right by design rather than corrected by a pump after the fact.</p>
+  </div>
+
+  <div class="content-section">
+    <div class="section-header">
+      <h2>Thermal Simulation</h2>
+      <span class="rev-tag rev-tag--current">2026 &middot; In Development</span>
+    </div>
+
+    <p>For the next pack, that decision is being checked rather than assumed. The team is running
+      Ansys thermal simulations of the new accumulator to confirm that the thermals will be
+      appropriately managed before anything gets built, so that staying passive is a result the
+      numbers support rather than a gamble on the pack running cool enough.</p>
+  </div>
+
   <div class="placeholder-body">
-    <p>This page is under construction. Check back soon for details on the Cooling subteam.</p>
     <a class="back-link" href="index.html#subteams">&larr; Back to Subteams</a>
   </div>
 
@@ -32,6 +121,7 @@
     &copy; <span id="year"></span> Clarkson Formula Electric Knights &mdash; Clarkson University
   </footer>
 
+  <script src="script.js"></script>
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
   </script>

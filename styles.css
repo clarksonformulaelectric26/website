@@ -522,10 +522,41 @@ a {
 /* ---------- Subteam placeholder page ---------- */
 
 .subteam-hero {
+  position: relative;
   padding: 8rem 2rem 4rem;
   text-align: center;
   background: linear-gradient(180deg, var(--bg-deep), var(--bg));
   border-bottom: 1px solid var(--line-soft);
+  overflow: hidden;
+}
+
+.subteam-hero-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 68%;
+  z-index: 1;
+}
+
+.subteam-hero.has-image {
+  min-height: 26rem;
+}
+
+.subteam-hero.has-image::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(180deg, rgba(5, 15, 12, 0.5) 0%, rgba(5, 15, 12, 0.5) 70%, var(--bg) 100%);
+}
+
+.subteam-hero > .hero-tag,
+.subteam-hero > h1,
+.subteam-hero > p {
+  position: relative;
+  z-index: 3;
 }
 
 .subteam-hero h1 {
@@ -543,6 +574,11 @@ a {
   letter-spacing: 0.01em;
   color: var(--text-muted);
   margin: 0;
+}
+
+.subteam-hero.has-image h1,
+.subteam-hero.has-image p {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.85), 0 4px 16px rgba(0, 0, 0, 0.7);
 }
 
 .back-link {
@@ -592,10 +628,15 @@ a {
   padding: 3rem 2rem;
 }
 
+/* Body copy keeps a 68ch reading measure, which is narrower than the section's
+   own column. Centering the block splits the leftover space evenly instead of
+   stacking it all on the right, where it read as a ragged gap beside the
+   full-width headings and media plates. */
 .content-section p {
   line-height: 1.6;
   color: var(--text);
   max-width: 68ch;
+  margin-inline: auto;
 }
 
 .content-section + .content-section {
@@ -701,6 +742,34 @@ a {
   border: 0;
 }
 
+.media-embed:focus-within {
+  outline: 2px solid var(--clarkson-gold);
+  outline-offset: 3px;
+}
+
+.media-plate--crop img {
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: center 25%;
+}
+
+/* Per-photo crop framing. Every cropped image defaults to a band that suits
+   most shots of its kind (`center 65%` on a card, `center 68%` on a hero,
+   `center 25%` on a media plate). These two shift the band when a particular
+   photo's subject sits somewhere else in its own frame; each is written
+   against the rule it overrides so it wins on specificity. */
+
+.card-image.crop-upper,
+.subteam-hero-image.crop-upper {
+  object-position: center 35%;
+}
+
+.card-image.crop-mid,
+.subteam-hero-image.crop-mid,
+.media-plate--crop img.crop-mid {
+  object-position: center 47%;
+}
+
 .media-plate figcaption {
   padding: 0.7rem 1rem;
   font-family: var(--font-mono);
@@ -730,4 +799,73 @@ a {
 .media-grid .media-plate img {
   aspect-ratio: 4 / 5;
   object-fit: cover;
+}
+
+/* Cutout plate: a background-removed part photo staged on a drafting field,
+   the way a parts catalog shows a single component. The dot grid and the
+   crossed datum lines do the work a drop shadow would otherwise be reached
+   for, keeping the plate flat and line-drawn like the rest of the system. */
+
+.media-plate--cutout .cutout-field {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background-color: var(--panel-raised);
+  background-image: radial-gradient(circle, var(--line-soft) 1px, transparent 1.4px);
+  background-size: 16px 16px;
+}
+
+/* Positive stacking, matching .subteam-hero.has-image: datum lines at 1, the
+   part at 2, so the lines always read as drafted underneath it. */
+.media-plate--cutout .cutout-field::before,
+.media-plate--cutout .cutout-field::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  background: var(--hazard-gold);
+  opacity: 0.35;
+}
+
+.media-plate--cutout .cutout-field::before {
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+}
+
+.media-plate--cutout .cutout-field::after {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+}
+
+/* A cutout PNG carries a wide transparent margin that is rarely centered, so the
+   part is placed by hand rather than by object-position. Measured on the ECU
+   source (1800x2400): the opaque board spans x 3.1%-81.8%, y 20.8%-82.8% of the
+   frame. Scaling the image to 68% of the field and offsetting by those bounds
+   lands the board centered, filling ~84% of the plate's height. Re-measure and
+   re-derive these three numbers if the image is ever replaced. */
+.media-plate--cutout img {
+  position: absolute;
+  z-index: 2;
+  width: 68%;
+  height: auto;
+  left: 21.1%;
+  top: -20.5%;
+}
+
+/* The ECU board is close to square, so a landscape field height-limits it. On a
+   phone that leaves the part too small to read, so the field squares up and the
+   part is re-derived from the same bounds at a larger scale. */
+@media (max-width: 640px) {
+  .media-plate--cutout .cutout-field {
+    aspect-ratio: 1 / 1;
+  }
+
+  .media-plate--cutout img {
+    width: 88%;
+    left: 12.6%;
+    top: -10.8%;
+  }
 }

@@ -60,3 +60,28 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("resize", onScroll);
   revealPending();
 });
+
+// Embedded iframes (e.g. YouTube) can receive keyboard focus with no visible
+// indication, since their own internal focus ring can't be styled cross-origin
+// and the page never scrolls to bring them into view. The visible outline
+// comes from the ".media-embed:focus-within" CSS rule (the browser tracks
+// that natively, no JS needed). Scrolling the frame into view can't rely on
+// a "focus" event, though: focus/blur/focusin firing on an <iframe> is
+// notoriously unreliable across browsers even though
+// `document.activeElement` updates correctly, so this polls activeElement
+// instead — a small, well-known, browser-agnostic workaround.
+document.addEventListener("DOMContentLoaded", () => {
+  const frames = Array.from(document.querySelectorAll(".media-embed iframe"));
+  if (!frames.length) return;
+
+  let lastActive = null;
+  setInterval(() => {
+    const active = document.activeElement;
+    if (active !== lastActive) {
+      lastActive = active;
+      if (frames.includes(active)) {
+        active.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  }, 200);
+});
