@@ -61,6 +61,29 @@ document.addEventListener("DOMContentLoaded", () => {
   revealPending();
 });
 
+// Builds the join panel's Google Form frame the first time the panel is
+// opened. It is not in the markup because a lazy <iframe> inside a closed
+// <details> is still loaded eagerly by Chrome, which would mean a request to
+// Google — and a Google cookie — for every visitor to the home page, not just
+// the ones who click Join. The container stays empty (and hidden by CSS) until
+// then, so with JavaScript off the "open in a new tab" link carries the panel
+// on its own.
+document.addEventListener("DOMContentLoaded", () => {
+  const panel = document.querySelector(".join-panel");
+  const embed = panel && panel.querySelector(".join-embed");
+  if (!embed || !embed.dataset.formSrc) return;
+
+  panel.addEventListener("toggle", () => {
+    if (!panel.open || embed.firstElementChild) return;
+
+    const frame = document.createElement("iframe");
+    frame.title = "New member interest form";
+    frame.height = embed.dataset.formHeight;
+    frame.src = embed.dataset.formSrc;
+    embed.appendChild(frame);
+  });
+});
+
 // Embedded iframes (e.g. YouTube) can receive keyboard focus with no visible
 // indication, since their own internal focus ring can't be styled cross-origin
 // and the page never scrolls to bring them into view. The visible outline

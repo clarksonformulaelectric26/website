@@ -105,8 +105,10 @@ a {
   .logo {
     font-size: 0.95rem;
   }
+  .site-header nav {
+    gap: 0.35rem 1rem;
+  }
   .site-header nav a {
-    margin-left: 1rem;
     font-size: 0.8rem;
   }
 }
@@ -133,10 +135,19 @@ a {
   display: block;
 }
 
+/* Flex with a gap rather than a margin on each link: with four items the nav
+   wraps on a phone, and a left margin would indent the start of the wrapped
+   row and push its last link into the viewport edge. */
+.site-header nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.4rem 1.5rem;
+}
+
 .site-header nav a {
   font-family: var(--font-mono);
   color: var(--text);
-  margin-left: 1.5rem;
   font-size: 0.78rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -315,44 +326,6 @@ a {
   margin: 0 auto;
 }
 
-.title-block {
-  position: absolute;
-  left: 44px;
-  bottom: 44px;
-  margin: 0;
-  padding: 0.7rem 1rem;
-  background: rgba(8, 12, 10, 0.82);
-  border: 1px solid var(--line-strong);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.03em;
-  display: grid;
-  grid-template-columns: repeat(4, auto);
-  gap: 0 1.1rem;
-  animation: copy-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: 0.7s;
-}
-
-.title-block > div {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.title-block dt {
-  color: var(--hazard-gold);
-  text-transform: uppercase;
-}
-
-.title-block dd {
-  margin: 0;
-  color: var(--text);
-}
-
-@media (max-width: 720px) {
-  .title-block { display: none; }
-}
-
 .scroll-cue {
   position: absolute;
   bottom: 2rem;
@@ -394,13 +367,84 @@ a {
   background: var(--bg);
 }
 
+/* ---------- Our Car (home, above the subteams) ---------- */
+
+.car-section {
+  padding: 4.5rem 2rem 3.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.car-heading {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.car-heading h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-size: 2rem;
+  margin: 0;
+}
+
+/* The glamour shot is a 3:4 portrait, so it is set beside the copy rather than
+   run full-bleed: a full-width band of it would either crop the car out or
+   swallow the viewport. The photo column is the narrower of the two so the
+   plate stays a readable height, and the copy is centered against it. */
+.car-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 42%) minmax(0, 1fr);
+  gap: 2.5rem;
+  align-items: center;
+  /* Narrower than the section itself (which keeps the full 1200px so its rule
+     lines up with the grid below) so the copy track lands near the site's
+     ~60ch measure instead of running the full column width. */
+  max-width: 940px;
+  margin-inline: auto;
+}
+
+.car-photo {
+  margin: 0;
+}
+
+.car-copy p {
+  line-height: 1.6;
+  color: var(--text);
+  max-width: 62ch;
+  margin: 0 0 1.1rem;
+}
+
+.car-copy p:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 860px) {
+  .car-layout {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+
+  /* justify-self rather than auto margins: the plate is a grid item, and a
+     stretched item that is then clamped by max-width keeps its auto margins
+     resolved at 0, which would leave the photo stuck to the left edge. */
+  .car-photo {
+    max-width: 22rem;
+    justify-self: center;
+  }
+}
+
 .subteams-section {
-  padding: 4rem 2rem 6rem;
+  padding: 4rem 2rem;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.subteams-section h2 {
+.subteams-section h2,
+.leads-section h2,
+.sponsors-section h2 {
   font-family: var(--font-display);
   text-transform: uppercase;
   letter-spacing: 0.02em;
@@ -409,7 +453,9 @@ a {
   margin-bottom: 0.5rem;
 }
 
-.subteams-section .section-intro {
+.subteams-section .section-intro,
+.leads-section .section-intro,
+.sponsors-section .section-intro {
   text-align: center;
   color: var(--text-muted);
   max-width: 36rem;
@@ -507,6 +553,452 @@ a {
   font-size: 1.05rem;
 }
 
+/* ---------- Subteam leads ---------- */
+
+.leads-section {
+  padding: 4.5rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  border-top: 1px solid var(--line-soft);
+}
+
+/* Fixed 210px tracks rather than minmax(…, 1fr), and centered: a lead portrait
+   is a person, so the plate has to stay portrait-proportioned instead of
+   stretching to whatever width a flexible track hands it. Centering means the
+   row reads deliberately while only one or two leads are up, and fills out
+   left-to-right as the rest are added. auto-fit, not auto-fill: auto-fill keeps
+   the empty tracks at full width, which leaves no free space for
+   justify-content to center and strands a lone card at the left edge. */
+.lead-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 210px);
+  justify-content: center;
+  gap: 1.75rem;
+}
+
+/* The officers sit on their own row above the subteam leads. Every card is the
+   same size — position and the role line carry the distinction, not scale. */
+.lead-grid--officers {
+  margin-bottom: 3rem;
+}
+
+.lead-card {
+  position: relative;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  background-image:
+    radial-gradient(circle at 10px 10px, rgba(226, 232, 227, 0.4) 1.6px, transparent 2px),
+    radial-gradient(circle at calc(100% - 10px) 10px, rgba(226, 232, 227, 0.4) 1.6px, transparent 2px),
+    radial-gradient(circle at 10px calc(100% - 10px), rgba(226, 232, 227, 0.4) 1.6px, transparent 2px),
+    radial-gradient(circle at calc(100% - 10px) calc(100% - 10px), rgba(226, 232, 227, 0.4) 1.6px, transparent 2px);
+}
+
+.lead-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--clarkson-gold);
+}
+
+.lead-card:hover .spec-code {
+  background: var(--hazard-gold);
+  color: var(--hazard-black);
+}
+
+/* 4:5 rather than the cards' 16:9: a head-and-shoulders portrait wants the
+   taller frame, and it keeps the leads visibly a different kind of card from
+   the subteam plates above them. */
+/* `height: auto` is load-bearing: the portraits carry width/height attributes
+   for layout stability, and those map to presentational height hints that
+   would otherwise pin the box to the file's own pixel height and leave
+   aspect-ratio with nothing to do. */
+.lead-portrait-placeholder,
+.lead-portrait {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+}
+
+.lead-portrait {
+  object-fit: cover;
+  object-position: center 30%;
+}
+
+.lead-portrait-placeholder {
+  background-image: radial-gradient(circle, var(--line-soft) 1px, transparent 1.4px);
+  background-size: 16px 16px;
+  background-color: var(--panel-raised);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Reserved height, so every card is the same size whichever row it is in and
+   whether or not it carries an officer role line — grid stretch only equalizes
+   cards within one row, and the officers are a row of their own. Sized to the
+   tallest case: name, role, and a subteam that wraps to two lines. */
+.lead-caption {
+  padding: 0.9rem 1.1rem 1rem;
+  min-height: 8rem;
+}
+
+.lead-caption h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+/* Officer title (Captain, Chief Engineer). Set in warm white so it reads as
+   the stronger of the two label lines without spending gold on it — the gold
+   here is the spec-code chip, and it stays rare. */
+.lead-role {
+  margin: 0.4rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+/* The subteam is the lead's assignment, not their title, so it is set as a
+   mono spec label under the name rather than as a second heading. */
+.lead-subteam {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.lead-card:hover .lead-subteam {
+  color: var(--clarkson-gold);
+}
+
+/* ---------- Lead detail page ---------- */
+
+/* Portrait left, bio right, on the same 940px measure as the Our Car layout.
+   The portrait column is fixed rather than fractional so the plate keeps its
+   4:5 proportion whatever the bio length. */
+.lead-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+  gap: 2.5rem;
+  align-items: start;
+  max-width: 940px;
+  margin: 0 auto;
+  padding: 3.5rem 2rem 5rem;
+}
+
+.lead-layout .media-plate {
+  margin: 0;
+}
+
+.lead-bio h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-size: 1.5rem;
+  margin: 0 0 1rem;
+}
+
+.lead-bio p {
+  line-height: 1.6;
+  color: var(--text);
+  max-width: 62ch;
+  margin: 0 0 1.1rem;
+}
+
+@media (max-width: 760px) {
+  .lead-layout {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+
+  /* justify-self, not auto margins — a stretched grid item clamped by
+     max-width keeps its auto margins resolved at 0. */
+  .lead-layout .media-plate {
+    max-width: 18rem;
+    justify-self: center;
+  }
+}
+
+/* ---------- Sponsors ---------- */
+
+.sponsors-section {
+  padding: 4.5rem 2rem 5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  border-top: 1px solid var(--line-soft);
+}
+
+/* Flex rather than grid, and centered: the plates are three different widths,
+   so rows are allowed to mix sizes and wrap where they land. That mixing is
+   deliberate — a size-sorted grid of rows would draw the support levels back
+   onto the page, which is exactly what the sizes alone are meant to convey. */
+.sponsor-wall {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  /* Bottom-aligned so the names in a row share one line and the plates sit on
+     a common shelf, whatever mix of sizes lands there. */
+  align-items: flex-end;
+  gap: 2rem 1.25rem;
+}
+
+.sponsor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  transition: transform 0.2s ease;
+}
+
+.sponsor:hover {
+  transform: translateY(-3px);
+}
+
+/* An invisible frame, not a plate: it only reserves each logo the same 3:2
+   footprint so the wall stays on a grid. Every mark sits straight on the ink
+   ground with its own transparency intact. */
+.sponsor-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  /* The frame is itself a column flex item, so its automatic minimum size is
+     content-based: without this, a tall logo overrides the aspect-ratio and
+     stands taller than the rest of its row. */
+  min-height: 0;
+}
+
+/* Sized to the frame's content box and letterboxed by object-fit rather than
+   left at its intrinsic size: a tall logo given `max-height: 100%` still
+   forces a flex container taller than its own aspect-ratio, which put one
+   logo out of line with the rest of its row.
+
+   Every sponsor mark is dark artwork — near-black wordmarks, deep red, navy —
+   so on the ink ground each one is lit from behind instead of being boxed:
+   zero-offset drop-shadows trace the logo's own alpha channel, so the halo
+   follows the letterforms rather than a rectangle. Three stacked passes do
+   different jobs — a tight opaque pass cuts the edge, a mid pass carries the
+   glow, a wide faint pass keeps it from reading as a hard sticker outline.
+   The light is Warm Plate White (#f3f0e6), never pure white. */
+.sponsor-mark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 1px rgba(243, 240, 230, 1))
+    drop-shadow(0 0 3px rgba(243, 240, 230, 0.7))
+    drop-shadow(0 0 12px rgba(243, 240, 230, 0.28));
+  transition: filter 0.2s ease;
+}
+
+/* Hover warms the outermost pass to hazard gold, which is the same move the
+   spec plates and the back link make. */
+.sponsor:hover .sponsor-mark img {
+  filter:
+    drop-shadow(0 0 1px rgba(243, 240, 230, 1))
+    drop-shadow(0 0 4px rgba(243, 240, 230, 0.8))
+    drop-shadow(0 0 16px rgba(255, 205, 0, 0.45));
+}
+
+/* Held at two lines' height so a name that wraps at a narrow plate width can't
+   shove its own plate up out of the row's shelf line; the first line of every
+   name still starts at the same height either way. */
+.sponsor-name {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.35;
+  min-height: 2.7em;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  text-align: center;
+  transition: color 0.2s ease;
+}
+
+.sponsor:hover .sponsor-name {
+  color: var(--clarkson-gold);
+}
+
+/* Plate width is the only thing that separates the levels. The clamp keeps the
+   three sizes proportional all the way down to a phone, where the smallest
+   pairing still fits two to a row. */
+.sponsor--lg {
+  width: clamp(9rem, 21vw, 16.25rem);
+}
+
+.sponsor--md {
+  width: clamp(7.25rem, 16vw, 12.5rem);
+}
+
+.sponsor--sm {
+  width: clamp(6rem, 13vw, 10.25rem);
+}
+
+/* Breathing room inside each frame, so neighbouring logos (and their halos)
+   never crowd each other. */
+.sponsor--lg .sponsor-mark {
+  padding: 0.8rem;
+}
+
+.sponsor--md .sponsor-mark {
+  padding: 0.65rem;
+}
+
+.sponsor--sm .sponsor-mark {
+  padding: 0.55rem;
+}
+
+/* ---------- Join the team (home, last band before the footer) ---------- */
+
+.join-section {
+  padding: 4rem 2rem 5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  border-top: 1px solid var(--line-soft);
+  text-align: center;
+}
+
+/* The third use of the system's one button treatment (see .back-link /
+   .cta-link): same ruled mono label, one step larger because it is the page's
+   closing call to action and it carries a disclosure chevron. Inline-level so
+   the section's text-align centers it — a <summary> is block by default. */
+.join-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1px solid var(--line-strong);
+  color: var(--text);
+  cursor: pointer;
+  list-style: none;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.join-toggle::-webkit-details-marker {
+  display: none;
+}
+
+.join-toggle:hover,
+.join-panel[open] .join-toggle {
+  border-color: var(--clarkson-gold);
+  color: var(--clarkson-gold);
+}
+
+.join-chevron {
+  width: 14px;
+  height: 9px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.2s ease;
+}
+
+.join-panel[open] .join-chevron {
+  transform: rotate(180deg);
+}
+
+/* A spec plate like every other panel in the system: Panel ground, hairline
+   border, rivet-dot corners, and a gold-on-black spec code in the corner. */
+.join-plate {
+  position: relative;
+  /* Sized so the frame inside clears Google's own 640px design width once the
+     plate's padding is taken off, rather than making the form reflow narrower. */
+  max-width: 700px;
+  margin: 1.75rem auto 0;
+  padding: 2.4rem 1.75rem 1.75rem;
+  text-align: left;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  background-image:
+    radial-gradient(circle at 10px 10px, rgba(226, 232, 227, 0.4) 1.6px, transparent 2px),
+    radial-gradient(circle at calc(100% - 10px) 10px, rgba(226, 232, 227, 0.4) 1.6px, transparent 2px),
+    radial-gradient(circle at 10px calc(100% - 10px), rgba(226, 232, 227, 0.4) 1.6px, transparent 2px),
+    radial-gradient(circle at calc(100% - 10px) calc(100% - 10px), rgba(226, 232, 227, 0.4) 1.6px, transparent 2px);
+  animation: join-unfold 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* <details> can't transition its own height, so the panel settles in instead —
+   the same easing and offset the subteam plates use when they reach view. */
+@keyframes join-unfold {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.join-intro {
+  margin: 0 0 1.75rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+/* The form is Google's, rendered on white and sized by Google. The plate's own
+   padding is the dark frame around it, and a hairline keeps the white edge from
+   meeting the ink ground raw. Width tracks the container so a phone gets the
+   whole viewport; Google reflows the form to whatever width it is given. */
+.join-embed {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  border: 1px solid var(--line-soft);
+  background: var(--panel-raised);
+}
+
+/* Empty until script.js builds the frame, and with JavaScript off it stays
+   that way — so an empty bordered box never sits on the page. */
+.join-embed:empty {
+  display: none;
+}
+
+.join-embed iframe {
+  display: block;
+  width: 100%;
+  border: 0;
+}
+
+/* Matches the outline a .media-embed gets: an embedded frame can take keyboard
+   focus with an internal focus ring this page can't style cross-origin. */
+.join-embed:focus-within {
+  outline: 2px solid var(--clarkson-gold);
+  outline-offset: 3px;
+}
+
+.join-fallback {
+  display: block;
+  width: fit-content;
+  margin: 1.5rem auto 0;
+}
+
+@media (max-width: 520px) {
+  .join-section {
+    padding: 3rem 1.25rem 4rem;
+  }
+  .join-plate {
+    padding: 2.4rem 0.75rem 1.5rem;
+  }
+}
+
 /* ---------- Footer ---------- */
 
 .site-footer {
@@ -581,9 +1073,12 @@ a {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.85), 0 4px 16px rgba(0, 0, 0, 0.7);
 }
 
-.back-link {
+/* The system's one button treatment: a ruled-border mono label that goes gold
+   on hover. Only the margin differs between the two uses — the back link is
+   centered at the end of a page, the CTA sits inline under a paragraph. */
+.back-link,
+.cta-link {
   display: inline-block;
-  margin: 3rem auto;
   padding: 0.6rem 1.2rem;
   font-family: var(--font-mono);
   font-size: 0.8rem;
@@ -594,7 +1089,16 @@ a {
   transition: border-color 0.2s ease, color 0.2s ease;
 }
 
-.back-link:hover {
+.back-link {
+  margin: 3rem auto;
+}
+
+.cta-link {
+  margin-top: 1.6rem;
+}
+
+.back-link:hover,
+.cta-link:hover {
   border-color: var(--clarkson-gold);
   color: var(--clarkson-gold);
 }
