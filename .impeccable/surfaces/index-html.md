@@ -2,7 +2,7 @@
 version: 1
 slug: "index-html"
 primary_target: "index.html"
-related_targets: ["high-voltage.html","low-voltage.html","chassis.html","drivetrain.html","suspension.html","vehicle-dynamics.html","brakes.html","cooling.html","ergonomics.html","aerodynamics.html","composites.html","business.html","styles.css"]
+related_targets: ["subteams/high-voltage.html","subteams/low-voltage.html","subteams/chassis.html","subteams/drivetrain.html","subteams/suspension.html","subteams/vehicle-dynamics.html","subteams/brakes.html","subteams/cooling.html","subteams/ergonomics.html","subteams/aerodynamics.html","subteams/composites.html","subteams/business.html","styles.css"]
 ---
 
 ## Scope
@@ -51,12 +51,12 @@ and product-clarity axes, per that round's verdict) and over the plain "clean mo
 standing exit. Code-led (no image generation available this session).
 
 **FINISH:** unreviewed and undocumented is unfinished; this build ends with the finish
-review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
+review, the verdict, docs/DESIGN.md, and every shipping raster carrying its provenance.
 
 ## Since the original build
 
 - The drafting title block (Title / Sheet / Scale / Location, hero bottom-left) has been
-  removed from the hero, its CSS deleted, and its component entry retired from DESIGN.md
+  removed from the hero, its CSS deleted, and its component entry retired from docs/DESIGN.md
   and `design.json`. It covered the team photo; do not reintroduce it. The `720px`
   title-block-hide breakpoint went with it.
 - An **Our Car** section now sits between the hero and the subteam grid: the glamour shot
@@ -65,12 +65,15 @@ review, the verdict, DESIGN.md, and every shipping raster carrying its provenanc
   ("Learn More") under the copy leads to `our-car.html` — a placeholder page on the
   subteam-page chrome, under construction until the car breakdown is written.
 - A **Leadership** section sits between the subteam grid and the sponsors: centered grids
-  of portrait lead cards, each linking to its own `lead-<first>-<last>.html` page with the
+  of portrait lead cards, each linking to its own `leads/lead-<first>-<last>.html` page with the
   portrait left and a bio right. Two rows of same-size cards — officers first (Isabelle
   Wells, chief engineer/captain/electrical lead; Ryan Withers, co-captain/chassis lead),
-  then the subteam leads (Matt Whispell, secretary/electrical; Greyson Howard, suspension,
-  vehicle dynamics and aerodynamics). Headshots live in `images/subteam_leads/`; every
-  lead has one, and all four bios are still under construction. Each grid centers a
+  then the subteam leads (Matt Whispell, Greyson Howard, John Gilligan, Frank Consolazio,
+  Vi Pham, Carter Evans). Each card's spec chip carries the subteam abbreviations that
+  lead owns (`SU·VD·AE`, `DT`), matching the codes on the subteam plates above, and the
+  same abbreviations run as the hero tag on their page. Headshots live in
+  `images/subteam_leads/`; Vi's and Carter's are still Photo Pending, and every bio is
+  under construction. Each grid centers a
   partly-filled row and fills out as more leads are photographed and written up.
 - A **Sponsors** wall closes the page. The header nav carries all four sections in page
   order (Our Car / Subteams / Leadership / Sponsors) and is now identical on every page
@@ -78,7 +81,7 @@ review, the verdict, DESIGN.md, and every shipping raster carrying its provenanc
   is `#leadership`. Sponsor logos are ranked by plate width alone — the
   support levels are never named on the page or in class names — and each dark logo is
   backlit by alpha-tracing `drop-shadow` halo passes rather than boxed on a white plate.
-  See the Sponsor Logo component and the Backlight-Not-Box Rule in DESIGN.md.
+  See the Sponsor Logo component and the Backlight-Not-Box Rule in docs/DESIGN.md.
 
 ## Unresolved decisions
 

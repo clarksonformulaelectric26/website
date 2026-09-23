@@ -1,6 +1,6 @@
 # Subteam page handoff — building on the High Voltage template
 
-This documents how [high-voltage.html](high-voltage.html) is built so another agent can bring
+This documents how [subteams/high-voltage.html](../subteams/high-voltage.html) is built so another agent can bring
 the other 11 subteam pages (Low Voltage, Chassis, Drivetrain, Suspension, Vehicle Dynamics,
 Brakes, Cooling, Ergo, Aerodynamics, Composites, Business) up to the same format. It currently
 still lists real content — read it directly for the up-to-date reference, not this doc.
@@ -37,7 +37,7 @@ Every subteam page is in one of two states. Do not blend them.
 </section>
 <div class="placeholder-body">
   <p>This page is under construction. Check back soon for details on the [Subteam Name] subteam.</p>
-  <a class="back-link" href="index.html#subteams">&larr; Back to Subteams</a>
+  <a class="back-link" href="../index.html#subteams">&larr; Back to Subteams</a>
 </div>
 ```
 
@@ -59,14 +59,14 @@ untouched, so converting a page doesn't affect the others.
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Barlow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="icon" type="image/png" href="images/CFEK_LOGO_Transparent.png" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="icon" type="image/png" href="../images/CFEK_LOGO_Transparent.png" />
 </head>
 <body>
   <header class="site-header solid">
-    <a href="index.html" class="logo"><img src="images/CFEK_LOGO_Transparent.png" alt="CFEK logo" class="logo-icon" /> Clarkson Formula Electric Knights</a>
+    <a href="../index.html" class="logo"><img src="../images/CFEK_LOGO_Transparent.png" alt="CFEK logo" class="logo-icon" /> Clarkson Formula Electric Knights</a>
     <nav>
-      <a href="index.html#subteams">Subteams</a>
+      <a href="../index.html#subteams">Subteams</a>
     </nav>
   </header>
 
@@ -76,7 +76,7 @@ untouched, so converting a page doesn't affect the others.
     &copy; <span id="year"></span> Clarkson Formula Electric Knights &mdash; Clarkson University
   </footer>
 
-  <script src="script.js"></script>
+  <script src="../script.js"></script>
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
   </script>
@@ -86,7 +86,7 @@ untouched, so converting a page doesn't affect the others.
 Notes:
 - `.site-header` always has the `solid` class on subteam pages (fixed dark-green bar, no
   fade). Only `index.html` toggles it on scroll via JS.
-- `<script src="script.js"></script>` is required on **every** content page that includes a
+- `<script src="../script.js"></script>` is required on **every** content page that includes a
   `.media-embed iframe` (video embed) — without it, keyboard focus silently jumps to the
   iframe with no visible outline and no scroll-into-view. It's harmless to include even on
   pages without an embed (the relevant JS block just no-ops).
@@ -116,7 +116,7 @@ Ordering lessons from High Voltage, apply these when sequencing a new page's sec
 
 ```html
 <section class="subteam-hero has-image">
-  <img class="subteam-hero-image" src="images/<slug>/<photo>.jpg" width="<natural-w>" height="<natural-h>" alt="<describe exactly what's in the photo>" loading="lazy" />
+  <img class="subteam-hero-image" src="../images/<slug>/<photo>.jpg" width="<natural-w>" height="<natural-h>" alt="<describe exactly what's in the photo>" loading="lazy" />
   <span class="hero-tag">XX &middot; 01</span>
   <h1>[Subteam Name]</h1>
   <p>[One-line tagline &mdash; scope, not marketing copy]</p>
@@ -157,7 +157,7 @@ sections that aren't tied to a car generation (e.g. a shared component).
 
 ```html
 <figure class="media-plate">
-  <img src="images/<slug>/<photo>.jpg" width="<w>" height="<h>" alt="<accurate description>" loading="lazy" />
+  <img src="../images/<slug>/<photo>.jpg" width="<w>" height="<h>" alt="<accurate description>" loading="lazy" />
   <figcaption><span class="fig-number">Fig. NN</span> [Caption confirmed with the subteam]</figcaption>
 </figure>
 ```
@@ -177,7 +177,7 @@ portrait/tall and would otherwise dominate the page — it forces a 16:9 crop vi
 </figure>
 ```
 
-Requires `<script src="script.js"></script>` on the page (see above) for focus/scroll handling.
+Requires `<script src="../script.js"></script>` on the page (see above) for focus/scroll handling.
 
 ### Multiple photos side by side
 
@@ -229,7 +229,7 @@ already in `styles.css`; don't reintroduce negative z-index here.
 
 ## Verification checklist for each new content page
 
-1. `impeccable detect --json <page>.html styles.css` — fix real findings; if something is an
+1. `impeccable detect --json subteams/<page>.html styles.css` (run from the repo root) — fix real findings; if something is an
    expected/pre-existing advisory (check `.impeccable/config.json` and prior critique notes
    before assuming it's new), leave it and don't re-litigate it.
 2. Open at both a narrow (~375px) and a normal desktop width. Confirm: hero photo frames the

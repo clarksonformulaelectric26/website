@@ -720,6 +720,34 @@ a {
   margin: 0 0 1.1rem;
 }
 
+/* Year, major and outbound links, set above the bio so they line up with the
+   top of the portrait. A hairline closes the block off from the bio the same
+   way the home sections are ruled from each other. */
+.lead-subheader {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.lead-bio .lead-meta {
+  margin: 0 0 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.lead-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 @media (max-width: 760px) {
   .lead-layout {
     grid-template-columns: 1fr;
@@ -872,36 +900,51 @@ a {
   margin: 0 auto;
   border-top: 1px solid var(--line-soft);
   text-align: center;
+  /* The header is fixed, so a jump to #join from the nav would otherwise stop
+     with the button tucked up under it. */
+  scroll-margin-top: 2rem;
 }
 
-/* The third use of the system's one button treatment (see .back-link /
-   .cta-link): same ruled mono label, one step larger because it is the page's
-   closing call to action and it carries a disclosure chevron. Inline-level so
-   the section's text-align centers it — a <summary> is block by default. */
+/* The one filled button in the system. Everything else is a ruled mono label
+   (see .back-link / .cta-link) precisely so that this — the single place a
+   visitor is asked to act — can be the thing that shouts. It stays inside the
+   Hazard Accent Rule by shouting the way the rest of the site does: a flat
+   gold fill on hazard black, the same device as the hero's hazard tag and a
+   hovered spec code, never a gradient, tint or glow.
+   Inline-level so the section's text-align centers it — <summary> is block. */
 .join-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.85rem 1.7rem;
+  gap: 0.85rem;
+  padding: 1.05rem 2.5rem;
   font-family: var(--font-mono);
-  font-size: 0.9rem;
-  letter-spacing: 0.05em;
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  border: 1px solid var(--line-strong);
-  color: var(--text);
+  color: var(--hazard-black);
+  background: var(--hazard-gold);
+  border: 1px solid var(--hazard-gold);
   cursor: pointer;
   list-style: none;
-  transition: border-color 0.2s ease, color 0.2s ease;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
 
 .join-toggle::-webkit-details-marker {
   display: none;
 }
 
+/* Hover inverts the fill and lifts — the same two moves a spec plate makes,
+   run in reverse. The open panel keeps the inverted state, so the button only
+   shouts while the form behind it is still closed. */
 .join-toggle:hover,
 .join-panel[open] .join-toggle {
-  border-color: var(--clarkson-gold);
+  background: transparent;
   color: var(--clarkson-gold);
+}
+
+.join-toggle:hover {
+  transform: translateY(-3px);
 }
 
 .join-chevron {
@@ -1077,7 +1120,8 @@ a {
    on hover. Only the margin differs between the two uses — the back link is
    centered at the end of a page, the CTA sits inline under a paragraph. */
 .back-link,
-.cta-link {
+.cta-link,
+.lead-links a {
   display: inline-block;
   padding: 0.6rem 1.2rem;
   font-family: var(--font-mono);
@@ -1098,7 +1142,8 @@ a {
 }
 
 .back-link:hover,
-.cta-link:hover {
+.cta-link:hover,
+.lead-links a:hover {
   border-color: var(--clarkson-gold);
   color: var(--clarkson-gold);
 }

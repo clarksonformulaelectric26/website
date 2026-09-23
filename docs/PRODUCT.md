@@ -37,8 +37,9 @@ have.
 
 ## Capabilities and Constraints
 
-- Plain static HTML/CSS/JS, no framework or build step. Pages are flat files at the
-  project root (e.g. `index.html`, `high-voltage.html`).
+- Plain static HTML/CSS/JS, no framework or build step. `index.html`, `our-car.html`,
+  `styles.css`, and `script.js` sit at the project root; subteam pages live in
+  `subteams/`, lead bio pages in `leads/`, and these docs in `docs/`.
 - Sponsors are recognized on the home page by logo, linked to the sponsor's own site.
   Support levels are reflected only by logo size, never named on the page. No formal
   sponsor-recognition agreement (required sizes, placements, or wording) has been

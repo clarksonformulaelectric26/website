@@ -11,6 +11,15 @@
         ],
         "createdAt": "2026-09-19T06:12:09.043Z",
         "reason": "Agent: flagged text is the .logo wordmark (team name, 33 chars) styled as the stenciled header/placard mark this direction calls for -- a short brand heading, not a prose passage; flagged only by character count, not by role"
+      },
+      {
+        "rule": "marketing-buzzword",
+        "value": "*",
+        "files": [
+          "leads/lead-matt-whispell.html"
+        ],
+        "createdAt": "2026-09-23T03:32:36.103Z",
+        "reason": "Claude triage: 'next-generation battery pack' is the user's own literal term for the team's next pack design, not marketing copy"
       }
     ]
   }

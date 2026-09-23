@@ -162,8 +162,18 @@ Hard, drafted corners everywhere — no `border-radius` on cards, panels, media 
 
 ### Buttons (`.back-link`, `.cta-link`)
 - **Shape:** rectangular, no radius; a single hairline border (`--line-strong`) at rest.
-- **Style:** uppercase mono label, `0.8rem`, 0.05em tracking. One treatment, two uses: `.back-link` is centered at the end of a page (`margin: 3rem auto`), `.cta-link` sits inline under a paragraph (`margin-top: 1.6rem`) — e.g. the "Learn More →" link out of the Our Car section. Only the margin differs; a third button should extend this pair rather than invent a new look.
+- **Style:** uppercase mono label, `0.8rem`, 0.05em tracking. One treatment, two uses: `.back-link` is centered at the end of a page (`margin: 3rem auto`), `.cta-link` sits inline under a paragraph (`margin-top: 1.6rem`) — e.g. the "Learn More →" link out of the Our Car section. Only the margin differs; another secondary button should extend this pair rather than invent a new look.
 - **Hover / Focus:** border and text both shift to Hazard Gold; `:focus-visible` gets a 2px gold outline offset 3px (site-wide, not button-specific).
+
+### Primary Button (`.join-toggle`)
+The system's one *filled* button, and deliberately the only one: every other button is ruled precisely so that this — the single place a visitor is asked to act — is the thing that shouts. A flat Hazard Gold fill with Hazard Black label, mono uppercase at `1.05rem` / 0.09em with generous padding, sized a clear step above the ruled pair.
+
+It stays inside the Hazard Accent Rule by shouting the way the rest of the site does: flat gold, the same device as the hero's hazard tag and a hovered spec code — never a gradient, tint or glow (the Flat Plate Rule still holds; the only motion is the lift).
+
+- **Hover:** inverts to a transparent fill with gold border and gold label, plus `translateY(-3px)` — the spec-plate hover run in reverse.
+- **Open state:** holds that inverted state, so the button only shouts while the panel behind it is still closed.
+
+A second filled button anywhere on the site would spend what makes this one work.
 
 ### Cards (Spec Plates)
 - **Corner Style:** square; four faint rivet-dots (radial-gradient) mark the corners instead of a radius.
@@ -176,13 +186,13 @@ Hard, drafted corners everywhere — no `border-radius` on cards, panels, media 
 ### Navigation (Header)
 - Fixed, transparent-over-hero gradient at rest; becomes a solid Clarkson Green bar with a hairline bottom border once the user scrolls past the hero.
 - Logo: the real team crest image + the team name set in uppercase Oswald — the one uppercase "body-length" text the system deliberately keeps, as a wordmark, not a sentence.
-- Nav links: uppercase mono, gold on hover with a matching underline. The same four links — Our Car, Subteams, Leadership, Sponsors — appear in page order on **every** page; interior pages point at `index.html#…` rather than dropping links. The nav is a flex row with a gap (not per-link margins) and wraps right-aligned on a phone, where four items need two rows.
+- Nav links: uppercase mono, gold on hover with a matching underline. The same five links — Our Car, Subteams, Leadership, Sponsors, Join Us — appear in page order on **every** page; interior pages point at `index.html#…` rather than dropping links. Join Us is last because it points at the page's closing call to action, and it is styled like its four neighbours rather than being promoted — the gold in the header is the hover state, and the shouting is the button's job. The nav is a flex row with a gap (not per-link margins) and wraps right-aligned on a phone, where five items need two rows.
 
 ### Hazard Tag (signature component)
 A diagonal ribbon (rotated 45°) fixed to the hero's top-right corner, gold fill with a repeating black-stripe trim top and bottom (the system's one deliberate use of repeating-stripe texture — because here the stripe pattern *is* the referent, hazard tape, not decoration standing in for it). Carries a short mono caution label. Present only on the home hero.
 
 ### Lead Card
-A spec plate for a person: same Panel ground, hairline border, rivet-dot corners, gold-on-black spec code (`LD·NN`), and gold-border-plus-`translateY(-4px)` hover as the subteam card. Two things differ, both because the subject is a person rather than a part:
+A spec plate for a person: same Panel ground, hairline border, rivet-dot corners, gold-on-black spec code — the subteam abbreviations that lead owns (`DT`, `HV·LV`, `SU·VD·AE`), reusing the codes stamped on the subteam plates so a chip says which plates are theirs — and gold-border-plus-`translateY(-4px)` hover as the subteam card. Two things differ, both because the subject is a person rather than a part:
 - **Portrait proportion.** The image well is 4:5, not the subteam card's 16:9 — a head-and-shoulders frame, and a visible signal that these are a different kind of card from the plates above them.
 - **A stacked caption.** The lead's name in Oswald uppercase, with their subteam under it as a mono spec label (`.lead-subteam`, muted → gold on hover). The subteam is the lead's assignment, not their title, so it is set as a label rather than a second heading. Officers add a `.lead-role` line between the two (Captain, Chief Engineer) in warm white — the stronger of the two label lines without spending gold on it, since the gold here is the spec-code chip and it stays rare.
 - **A reserved caption height.** `.lead-caption` carries `min-height: 8rem`, sized to the tallest case (name + role + a subteam wrapping to two lines). Grid stretch only equalizes cards within one row, and the officers are a row of their own, so without it a card without a role line would come up short against the row above.
