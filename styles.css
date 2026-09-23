@@ -52,6 +52,20 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Every target the nav jumps to. The header is fixed, so without this a jump
+   stops with the section's heading tucked up behind it — and the header is
+   roughly twice its usual height on a phone, where the five links wrap to two
+   rows. 5rem clears it there once the section's own top padding is added, and
+   reads as deliberate breathing room on a desktop rather than as a gap. */
+#our-car,
+#subteams,
+#leadership,
+#sponsors,
+#contact,
+#join {
+  scroll-margin-top: 5rem;
+}
+
 body {
   margin: 0;
   font-family: var(--font-body);
@@ -163,6 +177,138 @@ a {
   color: var(--clarkson-gold);
 }
 
+/* ---------- Phone menu toggle ----------
+
+   Off above 768px, where the wordmark and the five links still fit on one
+   line. Below it they do not: the nav wrapped to a second row and the wordmark
+   to two lines, which stacked into a 130px header — a fifth of a phone screen
+   spent on navigation before any of the page showed. */
+
+.nav-menu {
+  display: none;
+}
+
+.nav-menu-button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  /* A 44px target (the usual floor for a thumb) around a 22px glyph, with the
+     overhang pulled back so the bars still line up on the header's padding
+     edge rather than floating inside it. */
+  width: 44px;
+  height: 44px;
+  margin: -0.4rem -0.4rem -0.4rem 0;
+  padding-right: 0.4rem;
+  cursor: pointer;
+  list-style: none;
+  color: var(--text);
+  transition: color 0.2s ease;
+}
+
+.nav-menu-button::-webkit-details-marker {
+  display: none;
+}
+
+.nav-menu-button:hover {
+  color: var(--clarkson-gold);
+}
+
+/* Three ruled lines: the middle one is the element, the outer two its
+   pseudo-elements, so the glyph costs one span. */
+.nav-menu-bars {
+  position: relative;
+}
+
+.nav-menu-bars,
+.nav-menu-bars::before,
+.nav-menu-bars::after {
+  display: block;
+  width: 22px;
+  height: 1.6px;
+  background: currentColor;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.nav-menu-bars::before,
+.nav-menu-bars::after {
+  content: "";
+  position: absolute;
+  left: 0;
+}
+
+.nav-menu-bars::before { top: -7px; }
+.nav-menu-bars::after { top: 7px; }
+
+/* Open: the outer two rules fold into a cross and the middle one drops out. */
+.nav-menu[open] .nav-menu-bars {
+  background: transparent;
+}
+
+.nav-menu[open] .nav-menu-bars::before {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.nav-menu[open] .nav-menu-bars::after {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+@media (max-width: 768px) {
+  .nav-menu {
+    display: block;
+  }
+
+  /* Basis 0 rather than the wordmark's own width: at max-content the wordmark
+     claims the whole line and pushes the toggle onto a second one, left-aligned
+     under it. Given the remaining space instead, it wraps to two lines beside
+     the toggle and the header is one band again. */
+  .logo {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  /* The links are the toggle's content in every sense but the DOM's — they sit
+     beside the <details> rather than inside it so that they can still be a
+     plain row above this breakpoint. */
+  .site-header nav {
+    display: none;
+  }
+
+  .nav-menu[open] ~ nav {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 0;
+    margin-top: 0.85rem;
+    border-top: 1px solid var(--line-soft);
+    animation: nav-unfold 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Full-width rows, so the hover rule reads as a menu row and the tap target
+     is the whole width rather than the word. Kept right-aligned: the nav is
+     right-aligned everywhere else, and the toggle that opened it is up there. */
+  .nav-menu[open] ~ nav a {
+    padding: 0.85rem 0;
+    text-align: right;
+    opacity: 1;
+  }
+
+  /* Over the hero the header is a transparent gradient, which would leave an
+     open menu sitting on the team photo. Solid for as long as it is open —
+     the same treatment the header takes on once the page scrolls. */
+  .site-header:has(.nav-menu[open]) {
+    background: var(--bg-deep);
+    border-bottom: 1px solid var(--line-soft);
+  }
+}
+
+/* <details> can't transition its own height; the panel settles in instead, the
+   same move the Join panel makes. */
+@keyframes nav-unfold {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* ---------- Hero (fixed background that fades on scroll) ---------- */
 
 .hero {
@@ -244,53 +390,6 @@ a {
 .crosshair--tr { --tx: 50%; --ty: -50%; }
 .crosshair--bl { --tx: -50%; --ty: 50%; }
 .crosshair--br { --tx: 50%; --ty: 50%; }
-
-.hazard-tag {
-  position: absolute;
-  top: 88px;
-  right: -66px;
-  width: 260px;
-  padding: 9px 0;
-  background: var(--hazard-gold);
-  transform: rotate(45deg);
-  transform-origin: center;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
-  animation: tag-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: 0.5s;
-  z-index: 5;
-}
-
-@keyframes tag-in {
-  from { opacity: 0; transform: rotate(45deg) translateY(-12px); }
-  to { opacity: 1; transform: rotate(45deg) translateY(0); }
-}
-
-.hazard-tag::before,
-.hazard-tag::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 6px;
-  background: repeating-linear-gradient(-45deg, var(--hazard-black) 0 8px, transparent 8px 16px);
-}
-
-.hazard-tag::before { top: 0; }
-.hazard-tag::after { bottom: 0; }
-
-.hazard-tag span {
-  display: block;
-  font-family: var(--font-mono);
-  font-weight: 600;
-  font-size: 0.68rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--hazard-black);
-}
-
-@media (max-width: 640px) {
-  .hazard-tag { width: 220px; top: 96px; right: -60px; font-size: 0.9em; }
-}
 
 .hero-copy {
   position: relative;
@@ -444,7 +543,8 @@ a {
 
 .subteams-section h2,
 .leads-section h2,
-.sponsors-section h2 {
+.sponsors-section h2,
+.contact-section h2 {
   font-family: var(--font-display);
   text-transform: uppercase;
   letter-spacing: 0.02em;
@@ -455,7 +555,8 @@ a {
 
 .subteams-section .section-intro,
 .leads-section .section-intro,
-.sponsors-section .section-intro {
+.sponsors-section .section-intro,
+.contact-section .section-intro {
   text-align: center;
   color: var(--text-muted);
   max-width: 36rem;
@@ -892,25 +993,180 @@ a {
   padding: 0.55rem;
 }
 
-/* ---------- Join the team (home, last band before the footer) ---------- */
+/* ---------- Contact (home, the band above the Join button) ---------- */
 
-.join-section {
-  padding: 4rem 2rem 5rem;
+/* This band and the Join button below it read as one closing "get in touch"
+   block, so the hairline that used to open the Join section moves up here and
+   rules the pair off from the sponsor wall instead of splitting them. */
+.contact-section {
+  padding: 4rem 2rem 0;
   max-width: 1200px;
   margin: 0 auto;
   border-top: 1px solid var(--line-soft);
   text-align: center;
-  /* The header is fixed, so a jump to #join from the nav would otherwise stop
-     with the button tucked up under it. */
-  scroll-margin-top: 2rem;
+}
+
+/* Tighter than the card sections' 3rem: here the intro leads straight into a
+   single control rather than into a grid. */
+.contact-section .section-intro {
+  margin-bottom: 1.5rem;
+}
+
+/* Address and social marks on one line. align-items: stretch lets the two
+   square icon buttons take their height from the address button beside them,
+   so the three share a baseline and a height without any of it being hard-coded
+   to a font size. Wraps rather than overflowing on a narrow phone. */
+.contact-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+/* The ruled secondary button, extended rather than reinvented (see DESIGN.md).
+   Written as .cta-link.contact-email so it outranks the shared button rule
+   further down the file, which would otherwise win on source order alone.
+
+   The address keeps its own case — like a sponsor name or a caption it is data
+   quoted verbatim, not a label the page gets to shout — and is set a step
+   larger than a 0.8rem label so it can be read off the screen and typed by hand
+   if the copy never happens. */
+.cta-link.contact-email {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 0;
+  padding: 0.7rem 1.3rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  cursor: pointer;
+}
+
+.contact-icon {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.75;
+}
+
+.contact-email:hover .contact-icon {
+  opacity: 1;
+}
+
+.contact-social-group {
+  display: flex;
+  gap: 0.6rem;
+}
+
+/* Square siblings of the address button: same ruled border and gold hover, with
+   the padding dropped so the mark centers in a box the row's height makes. */
+.cta-link.contact-social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  /* Stretch only equalizes within a flex line, so once the row wraps a mark
+     that lands alone on the second line would collapse to its glyph. The
+     min-height keeps it square there. */
+  min-height: 2.75rem;
+  margin-top: 0;
+  padding: 0;
+}
+
+.social-icon {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The lens dot on the Instagram mark and the stem dot on the "i" are solid in
+   both real marks, so they are filled rather than stroked. */
+.social-dot {
+  fill: currentColor;
+  stroke: none;
+}
+
+/* The confirmation sits in its own reserved strip below the row so it can
+   appear and clear without moving the Join button underneath. */
+.contact-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.5rem;
+  margin-top: 0.85rem;
+}
+
+/* The chip is the spec-code device — flat gold on hazard black, the same stamp
+   a card corner wears — not a floating notification surface. */
+.contact-toast {
+  opacity: 0;
+  padding: 3px 9px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--hazard-black);
+  background: var(--hazard-gold);
+  transition: opacity 0.2s ease;
+}
+
+.contact-note.is-copied .contact-toast {
+  opacity: 1;
+}
+
+@media (max-width: 520px) {
+  .contact-section {
+    padding: 3rem 1.25rem 0;
+  }
+  /* The address is the longest unbreakable string on the page; on a narrow
+     phone the button gives up its padding before the address wraps. The row
+     tightens with it so address and marks still share one line at 375px. */
+  .cta-link.contact-email {
+    padding: 0.7rem 0.9rem;
+    font-size: 0.85rem;
+  }
+  .contact-row,
+  .contact-social-group {
+    gap: 0.45rem;
+  }
+  .cta-link.contact-social {
+    width: 2.5rem;
+    min-height: 2.5rem;
+  }
+  .social-icon {
+    width: 17px;
+    height: 17px;
+  }
+}
+
+/* ---------- Join the team (home, last band before the footer) ---------- */
+
+/* No top border — .contact-section carries the hairline for the pair. */
+.join-section {
+  padding: 2.5rem 2rem 5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
 }
 
 /* The one filled button in the system. Everything else is a ruled mono label
    (see .back-link / .cta-link) precisely so that this — the single place a
    visitor is asked to act — can be the thing that shouts. It stays inside the
    Hazard Accent Rule by shouting the way the rest of the site does: a flat
-   gold fill on hazard black, the same device as the hero's hazard tag and a
-   hovered spec code, never a gradient, tint or glow.
+   gold fill on hazard black, the same device as a hovered spec code and the
+   copy confirmation chip, never a gradient, tint or glow.
    Inline-level so the section's text-align centers it — <summary> is block. */
 .join-toggle {
   display: inline-flex;
@@ -1035,7 +1291,7 @@ a {
 
 @media (max-width: 520px) {
   .join-section {
-    padding: 3rem 1.25rem 4rem;
+    padding: 2rem 1.25rem 4rem;
   }
   .join-plate {
     padding: 2.4rem 0.75rem 1.5rem;

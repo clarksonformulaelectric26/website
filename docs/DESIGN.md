@@ -131,9 +131,11 @@ Near-black and the two Clarkson greens form the ground; gold is the one color al
 
 Single-column, full-bleed hero pinned behind the scrolling page (`position: fixed` hero + `margin-top: 100vh` content), with the hero's background-to-ink opacity crossfading over the first viewport height as the user scrolls — the hero never abruptly cuts away.
 
-The hero is framed like a technical drawing sheet: a ruled border inset 28px from the viewport edge, with a registration crosshair mark at each of its four corners. The hero carries only the headline, the hazard tag, and the scroll cue — nothing is anchored in its lower corners.
+The hero is framed like a technical drawing sheet: a ruled border inset 28px from the viewport edge, with a registration crosshair mark at each of its four corners. The hero carries only the headline and the scroll cue — nothing is anchored in its corners, so the team photo behind it is read as a photograph rather than as a plate with things bolted to it.
 
 Below the hero the home page runs four sections, each capped at 1200px and separated by a hairline rule: **Our Car**, **Our Subteams**, **Subteam Leads**, **Sponsors**.
+
+The page then closes on a **Contact / Join** pair. The two share one hairline (it sits on `.contact-section`, and `.join-section` has none) and no rule runs between them, because they are one closing "get in touch" block read in order of commitment — mail a question, or sign up. Contact is the quieter half by construction: a ruled button above the filled one, so the eye still lands on Join.
 
 *Our Car* is a two-column grid (`minmax(0, 42%)` photo / `minmax(0, 1fr)` copy, 2.5rem gap) centered inside a narrower 940px track so the copy lands near the site's ~60ch measure. The photo is a 3:4 portrait, so it is set beside the copy rather than run full-bleed — a full-width band would either crop the car out or swallow the viewport. Under 860px it stacks, and the photo clamps to 22rem and centers with `justify-self` (not auto margins, which a stretched grid item resolves to 0).
 
@@ -145,7 +147,7 @@ Below the hero the home page runs four sections, each capped at 1200px and separ
 
 ## Elevation & Depth
 
-Flat by default. Depth comes from ruled lines, corner crosshairs/rivet-dots, and border-color shifts on hover — not shadows or glass. The only true `box-shadow` in the system is a soft, blurred drop shadow under the diagonal hazard-tag ribbon (`0 6px 18px rgba(0,0,0,0.45)`), justified because the ribbon reads as a physically bolted-on object; nothing else casts a shadow.
+Flat by default. Depth comes from ruled lines, corner crosshairs/rivet-dots, and border-color shifts on hover — not shadows or glass. There is no `box-shadow` anywhere in the system: the one that existed sat under the hero's hazard-tag ribbon, which has since been removed, and nothing has earned one back.
 
 The one other soft effect is the **sponsor halo** — stacked zero-offset `drop-shadow()` filters on sponsor logos. It is not elevation: the offsets are zero, so nothing is lifted off the page, and because `drop-shadow` traces a PNG's alpha channel the light follows the letterforms rather than a rectangle. See the Sponsor Logo component for why it is earned.
 
@@ -168,12 +170,26 @@ Hard, drafted corners everywhere — no `border-radius` on cards, panels, media 
 ### Primary Button (`.join-toggle`)
 The system's one *filled* button, and deliberately the only one: every other button is ruled precisely so that this — the single place a visitor is asked to act — is the thing that shouts. A flat Hazard Gold fill with Hazard Black label, mono uppercase at `1.05rem` / 0.09em with generous padding, sized a clear step above the ruled pair.
 
-It stays inside the Hazard Accent Rule by shouting the way the rest of the site does: flat gold, the same device as the hero's hazard tag and a hovered spec code — never a gradient, tint or glow (the Flat Plate Rule still holds; the only motion is the lift).
+It stays inside the Hazard Accent Rule by shouting the way the rest of the site does: flat gold, the same device as a hovered spec code and the copy confirmation chip — never a gradient, tint or glow (the Flat Plate Rule still holds; the only motion is the lift).
 
 - **Hover:** inverts to a transparent fill with gold border and gold label, plus `translateY(-3px)` — the spec-plate hover run in reverse.
 - **Open state:** holds that inverted state, so the button only shouts while the panel behind it is still closed.
 
 A second filled button anywhere on the site would spend what makes this one work.
+
+### Contact Copy Link (`.contact-email`)
+The team address in the Contact band, marked up as a real `mailto:` link and extending the ruled `.cta-link` treatment rather than inventing a look — written as `.cta-link.contact-email` so it outranks the shared rule on specificity instead of source order.
+
+Three deliberate departures from that base: the address keeps its own lowercase (like a sponsor name or a caption, it is data quoted verbatim, not a label the page gets to shout), it is set at `0.95rem` rather than `0.8rem` so it can be read off the screen and typed by hand, and it carries a small stroked copy glyph at 0.75 opacity that goes solid on hover.
+
+- **Behaviour:** `script.js` intercepts the click and copies the address instead of opening a mail client. With JavaScript off the `mailto:` simply works. The copy glyph is the entire affordance — no instruction line runs under the button, because the border and the glyph already say "control, and it copies."
+- **Confirmation:** a flat gold-on-hazard-black chip — the spec-code stamp device, not a floating notification surface — fading in inside its own reserved strip (`.contact-note`, `min-height: 1.5rem`) so it can never nudge the Join button below. The chip's text is written in by script rather than pre-rendered, so its `role="status"` region is actually announced.
+- **Failure:** if the clipboard is unreachable (a non-secure context with no `execCommand` left), the script selects the address in place and the chip says so instead of claiming a copy that did not happen.
+
+### Social Marks (`.contact-social`)
+Instagram and LinkedIn sit to the right of the address as square siblings of it — the same ruled border and gold hover, padding dropped so the mark centers in a box whose height the address button sets (`.contact-row` is `align-items: stretch`; a `min-height` keeps them square if the row wraps). They are grouped in `.contact-social-group` so the pair wraps under the address together rather than one mark dropping alone.
+
+Both marks are **drawn from primitives** — a rounded rect, a circle, a filled dot, two strokes and an arc — rather than pasted in as official brand paths. The official LinkedIn glyph is solid and Instagram's is an outline; dropping both in would put one filled foreign glyph and one outlined one on the ink ground, next to a site whose every other icon (chevron, crosshairs, copy glyph) is a 1.7px stroke. Drawn this way they stroke like the rest of the system and still read instantly. Each link carries an `aria-label`, since there is no text in the button.
 
 ### Cards (Spec Plates)
 - **Corner Style:** square; four faint rivet-dots (radial-gradient) mark the corners instead of a radius.
@@ -186,10 +202,15 @@ A second filled button anywhere on the site would spend what makes this one work
 ### Navigation (Header)
 - Fixed, transparent-over-hero gradient at rest; becomes a solid Clarkson Green bar with a hairline bottom border once the user scrolls past the hero.
 - Logo: the real team crest image + the team name set in uppercase Oswald — the one uppercase "body-length" text the system deliberately keeps, as a wordmark, not a sentence.
-- Nav links: uppercase mono, gold on hover with a matching underline. The same five links — Our Car, Subteams, Leadership, Sponsors, Join Us — appear in page order on **every** page; interior pages point at `index.html#…` rather than dropping links. Join Us is last because it points at the page's closing call to action, and it is styled like its four neighbours rather than being promoted — the gold in the header is the hover state, and the shouting is the button's job. The nav is a flex row with a gap (not per-link margins) and wraps right-aligned on a phone, where five items need two rows.
+- Nav links: uppercase mono, gold on hover with a matching underline. The same five links — Our Car, Subteams, Leadership, Sponsors, Contact Us — appear in page order on **every** page; interior pages point at `index.html#…` rather than dropping links. Contact Us is last because it points at the closing Contact/Join pair, and landing on `#contact` puts the Join button in view directly below it — so the nav carries both asks with one link, and carries the quieter one as its label. It is styled like its four neighbours rather than being promoted: the gold in the header is the hover state, and the shouting is the button's job. Above 768px the nav is a flex row with a gap (not per-link margins), right-aligned opposite the wordmark.
+- Phone menu (`.nav-menu`, ≤768px): the five links collapse behind a three-rule toggle at the header's right edge. Below that width the wordmark wraps to two lines and the nav to a second row, which stacked into a 130px header — a fifth of a phone screen spent on navigation before any of the page showed; the toggle brings it back to 78px. Open, it drops the links as full-width right-aligned rows (44px tall, the usual thumb-target floor) under a hairline, and the three rules fold into a cross.
+- The toggle is a `<details>` whose `[open]` reveals the nav *beside* it (`.nav-menu[open] ~ nav`) rather than content inside it — so the menu needs no JavaScript, which matters because 18 of the site's 22 pages don't load `script.js`, and so the same links can still be a plain row above the breakpoint. Where the script does load, it closes the menu after a link (the home page's links are same-page jumps, which would otherwise leave the panel sitting over the section it just scrolled to) and on Escape. The header takes its solid Clarkson Green for as long as the menu is open, since over the hero the links would otherwise sit on the team photo.
+- Jump targets: every section the nav points at carries `scroll-margin-top: 5rem`, so a jump clears the fixed header — which is roughly double height on a phone, where the links wrap to two rows — rather than parking the heading behind it. `script.js` also re-runs the jump on load for a page *opened* at a fragment (`index.html#contact` from an interior page's nav): the site's `scroll-behavior: smooth` makes the browser animate that first scroll, and the animation dies when the page's images shift the layout under it, so without the re-run an arriving visitor lands at the top.
 
-### Hazard Tag (signature component)
-A diagonal ribbon (rotated 45°) fixed to the hero's top-right corner, gold fill with a repeating black-stripe trim top and bottom (the system's one deliberate use of repeating-stripe texture — because here the stripe pattern *is* the referent, hazard tape, not decoration standing in for it). Carries a short mono caution label. Present only on the home hero.
+### Hazard Tag (removed)
+A diagonal gold ribbon with black stripe trim, rotated 45° into the hero's top-right corner, carrying a mono "Caution — High Voltage" label. Removed: it sat across the team photograph, and a tag bolted over a picture of the people on the team was the one place the drawing-sheet metaphor was applied to something that isn't a drawing. Gold now enters the page for the first time on the headline's accent words.
+
+With it went the system's only repeating-stripe texture and its only `box-shadow`. Don't reintroduce either without the same justification the ribbon had — that the stripe pattern *is* its referent, and that the object genuinely reads as bolted on.
 
 ### Lead Card
 A spec plate for a person: same Panel ground, hairline border, rivet-dot corners, gold-on-black spec code — the subteam abbreviations that lead owns (`DT`, `HV·LV`, `SU·VD·AE`), reusing the codes stamped on the subteam plates so a chip says which plates are theirs — and gold-border-plus-`translateY(-4px)` hover as the subteam card. Two things differ, both because the subject is a person rather than a part:
