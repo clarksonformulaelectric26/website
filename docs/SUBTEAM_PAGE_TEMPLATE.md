@@ -65,8 +65,22 @@ untouched, so converting a page doesn't affect the others.
 <body>
   <header class="site-header solid">
     <a href="../index.html" class="logo"><img src="../images/CFEK_LOGO_Transparent.png" alt="CFEK logo" class="logo-icon" /> Clarkson Formula Electric Knights</a>
+
+    <!-- Phone-only menu toggle; a <details> so the menu opens with no
+         JavaScript. See index.html for the full note. -->
+    <details class="nav-menu">
+      <summary class="nav-menu-button" aria-label="Menu">
+        <span class="nav-menu-bars" aria-hidden="true"></span>
+      </summary>
+    </details>
+
     <nav>
+      <a href="../index.html#our-car">Our Car</a>
       <a href="../index.html#subteams">Subteams</a>
+      <a href="../index.html#leadership">Leadership</a>
+      <a href="../index.html#sponsors">Sponsors</a>
+      <a href="../index.html#contact">Contact Us</a>
+      <a class="nav-tool" href="../telemetry/index.html" title="Telemetry viewer"><svg class="nav-tool-icon" viewBox="0 0 16 12" aria-hidden="true"><polyline points="1,8 4,8 6,3 9,10 11,6 15,6"/></svg><span class="nav-tool-label">Telemetry</span></a>
     </nav>
   </header>
 

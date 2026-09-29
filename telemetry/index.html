@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Telemetry Viewer &mdash; Clarkson Formula Electric Knights</title>
+<link rel="icon" type="image/png" href="../images/CFEK_LOGO_Transparent.png">
+<!-- Website copy of TelemetryViewer26/index.html. The only differences are the
+     title, favicon, the crest link home in the top bar, and the narrow-screen
+     rules at the end of the style block; port viewer changes across by hand. -->
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface: #fcfcfb; --raised: #ffffff;
+    --text-1: #0b0b0b; --text-2: #52514e; --muted: #898781;
+    --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --accent: #2a78d6; --accent-strong: #256abf; --wash: rgba(42,120,214,0.10); --critical: #d03b3b;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100;
+    --s5: #e87ba4; --s6: #008300; --s7: #4a3aa7; --s8: #e34948;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface: #1a1a19; --raised: #232322;
+      --text-1: #ffffff; --text-2: #c3c2b7; --muted: #898781;
+      --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+      --accent: #3987e5; --accent-strong: #256abf; --wash: rgba(57,135,229,0.16);
+      --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+      --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --raised: #232322;
+    --text-1: #ffffff; --text-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+    --accent: #3987e5; --accent-strong: #256abf; --wash: rgba(57,135,229,0.16);
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+    --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--page); color: var(--text-1);
+    font: 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  button, select, input { font: inherit; color: inherit; }
+  button {
+    background: var(--raised); border: 1px solid var(--border); border-radius: 6px;
+    padding: 4px 10px; cursor: pointer; white-space: nowrap;
+  }
+  button:hover:not(:disabled) { background: var(--wash); }
+  button:disabled { opacity: .45; cursor: default; }
+  button.primary { background: var(--accent-strong); border-color: transparent; color: #fff; }
+  button.primary:hover { filter: brightness(1.08); background: var(--accent-strong); }
+  button.icon { padding: 2px 8px; }
+  button[aria-pressed="true"] { background: var(--wash); border-color: var(--accent); }
+  select, input[type=text], input[type=number] {
+    background: var(--raised); border: 1px solid var(--border); border-radius: 6px; padding: 3px 6px;
+  }
+  input[type=number] { width: 68px; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .muted { color: var(--text-2); }
+  .num { font-variant-numeric: tabular-nums; }
+  .spacer { flex: 1; }
+  .field { display: inline-flex; align-items: center; gap: 4px; color: var(--text-2); }
+
+  .top {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 8px 12px; background: var(--surface); border-bottom: 1px solid var(--border);
+  }
+  .top h1 { font-size: 17px; font-weight: 600; margin: 0 6px 0 0; }
+  .sep { width: 1px; height: 20px; background: var(--border); margin: 0 4px; }
+
+  .layout { flex: 1; display: flex; min-height: 0; }
+  aside {
+    width: 340px; flex: none; overflow: auto; padding: 4px 14px 16px;
+    background: var(--surface); border-right: 1px solid var(--border);
+  }
+  aside h2 {
+    font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--text-2); margin: 16px 0 8px;
+  }
+  main { flex: 1; min-width: 0; overflow: auto; padding: 12px; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+  .key { display: inline-block; width: 14px; height: 2px; border-radius: 1px; flex: none; }
+
+  dl.info { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; margin: 0; }
+  dl.info dt { color: var(--text-2); }
+  dl.info dd { margin: 0; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .note { margin-top: 8px; padding: 8px 10px; border-radius: 6px; background: var(--wash); color: var(--text-1); }
+  .summary { padding: 8px 10px; border-radius: 6px; background: var(--wash); margin-bottom: 10px; }
+  .opt { display: flex; align-items: center; gap: 6px; margin: 6px 0; color: var(--text-2); }
+  .opt > span:first-child { flex: 1; }
+  .crow { padding: 8px 0; border-top: 1px solid var(--border); }
+  .crow-top { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+  .crow-top .cres { margin-left: auto; color: var(--text-2); font-size: 12px; text-align: right; }
+  .crow-ctl { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; color: var(--text-2); }
+  .crow-ctl input[type=number] { width: 62px; }
+  .crow-ctl select { max-width: 112px; }
+  .hint { color: var(--text-2); font-size: 12px; }
+  code { font-family: ui-monospace, Consolas, monospace; font-size: 12px; }
+  .err { color: var(--critical); font-size: 12px; min-height: 1em; margin-top: 4px; }
+  #mathForm { display: flex; gap: 6px; }
+  #mathIn { flex: 1; min-width: 0; font-family: ui-monospace, Consolas, monospace; font-size: 12px; }
+  #mathList { list-style: none; padding: 0; margin: 6px 0 0; }
+  #mathList li { display: flex; align-items: center; gap: 6px; padding: 3px 0; }
+  #mathList code { flex: 1; overflow-wrap: anywhere; color: var(--text-2); }
+  ul.help { padding-left: 16px; margin: 0; color: var(--text-2); }
+  ul.help li { margin: 2px 0; }
+  ul.help b { color: var(--text-1); font-weight: 600; }
+
+  .empty { height: 100%; display: flex; align-items: center; justify-content: center; }
+  .drop {
+    border: 2px dashed var(--axis); border-radius: 12px; padding: 48px 64px; text-align: center;
+    color: var(--text-2); display: flex; flex-direction: column; gap: 10px; align-items: center;
+  }
+  .drop strong { color: var(--text-1); font-size: 16px; }
+  #dropVeil {
+    position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+    background: var(--wash); backdrop-filter: blur(2px); z-index: 10; pointer-events: none;
+  }
+  #dropVeil div {
+    border: 2px dashed var(--accent); border-radius: 12px; padding: 32px 48px;
+    background: var(--surface); font-size: 16px; font-weight: 600;
+  }
+  body.dragging #dropVeil { display: flex; }
+
+  .ovcard { margin-bottom: 10px; padding: 6px 8px; }
+  .ovhead { display: flex; gap: 8px; align-items: center; color: var(--text-2); font-size: 12px; margin-bottom: 4px; }
+  #ov { display: block; width: 100%; height: 46px; cursor: crosshair; touch-action: none; }
+
+  .graph { margin-bottom: 10px; }
+  .graph-head {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+    padding: 6px 8px; border-bottom: 1px solid var(--border);
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 1px 2px 1px 8px;
+    border: 1px solid var(--border); border-radius: 999px; background: var(--raised);
+  }
+  .chip button { border: 0; background: none; padding: 0 6px; color: var(--text-2); border-radius: 999px; }
+  .plot { position: relative; height: 170px; min-height: 80px; resize: vertical; overflow: hidden; }
+  .plot canvas { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; touch-action: none; }
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 4px 20px; padding: 6px 10px 7px;
+    border-top: 1px solid var(--border); font-variant-numeric: tabular-nums; min-height: 30px;
+  }
+  .legend .item { display: inline-flex; align-items: center; gap: 6px; }
+  .legend .name { color: var(--text-2); }
+  .legend .val { color: var(--text-1); font-weight: 600; min-width: 6ch; text-align: right; }
+  .legend .val:empty { display: none; }
+  .legend .stats { color: var(--muted); font-size: 12px; }
+  .legend .xk { font-size: 11px; font-weight: 600; color: var(--muted); width: 14px; text-align: center; }
+  .addg { width: 100%; padding: 8px; border-style: dashed; color: var(--text-2); background: none; margin-bottom: 10px; }
+
+  #tableWrap { padding: 8px 0 0; }
+  #tableNote { padding: 0 10px 6px; }
+  .tscroll { max-height: 420px; overflow: auto; }
+  table { border-collapse: collapse; font-variant-numeric: tabular-nums; width: max-content; min-width: 100%; }
+  th, td { padding: 3px 10px; text-align: right; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th { position: sticky; top: 0; background: var(--surface); color: var(--text-2); font-weight: 600; }
+  td.rep { font-style: italic; color: var(--muted); }
+  td.rep::after { content: " \00d7"; }
+  td.unw { text-decoration: underline dotted var(--muted); }
+
+  #toast {
+    position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); max-width: 70vw;
+    background: var(--text-1); color: var(--surface); padding: 8px 14px; border-radius: 8px;
+    opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 20;
+  }
+  #toast.show { opacity: 1; }
+  body.noside aside { display: none; }
+
+  /* Website additions. */
+  .home { display: flex; align-items: center; padding: 2px; border-radius: 6px; }
+  .home:hover { background: var(--wash); }
+  .home img { display: block; height: 24px; width: auto; }
+
+  /* Phones and narrow windows: the 340px setup panel would leave the graphs a
+     sliver, so it floats over them as a drawer instead, closed on load. */
+  @media (max-width: 760px) {
+    .top { gap: 6px; padding: 6px 8px; }
+    .top h1 { font-size: 15px; }
+    .top .sep { display: none; }
+    .layout { position: relative; }
+    aside {
+      position: absolute; top: 0; bottom: 0; left: 0; z-index: 5; width: min(340px, 88vw);
+      box-shadow: 0 8px 24px rgba(0,0,0,.28);
+    }
+    main { padding: 8px; }
+    .drop { padding: 32px 24px; }
+  }
+  /* Phones: the crest already says whose tool this is and the graph axes show
+     the time window, so the title and range readout give their room to the
+     buttons. */
+  @media (max-width: 480px) {
+    .top h1, #rangeLbl { display: none; }
+    .top button { padding: 4px 8px; }
+  }
+  /* On touch screens a vertical swipe over a graph scrolls the page instead of
+     being swallowed; sideways drags still zoom. */
+  @media (pointer: coarse) {
+    .plot canvas { touch-action: pan-y; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <button id="sideBtn" class="icon" title="Show or hide the setup panel" aria-label="Toggle setup panel">&#9776;</button>
+  <a class="home" href="../index.html" title="Back to the team site" aria-label="Clarkson Formula Electric Knights home"><img src="../images/CFEK_LOGO_Transparent.png" alt=""></a>
+  <h1>FSAE Telemetry Viewer</h1>
+  <button id="openBtn" class="primary">Open CSV&hellip;</button>
+  <input id="fileIn" type="file" accept=".csv,.txt,text/csv" hidden>
+  <span id="fileName" class="muted"></span>
+  <label class="field" id="sessWrap" hidden>Session <select id="sessSel"></select></label>
+  <span class="sep"></span>
+  <button id="resetBtn" disabled title="Show the whole session again (also: double-click a graph)">Reset zoom</button>
+  <button id="addGraphBtn" disabled>+ Graph</button>
+  <button id="tableBtn" disabled aria-pressed="false" title="Show the cleaned rows in the current time window">Table</button>
+  <button id="exportBtn" disabled title="Download the cleaned data (current session) as CSV">Export cleaned CSV</button>
+  <span class="spacer"></span>
+  <span id="rangeLbl" class="muted num"></span>
+  <button id="themeBtn" title="Switch between automatic, light and dark">Theme: auto</button>
+</header>
+
+<div class="layout">
+  <aside id="side">
+    <section>
+      <h2>Log</h2>
+      <div id="info" class="muted">No file loaded.</div>
+    </section>
+
+    <section id="cleanSec" hidden>
+      <h2>Cleaning</h2>
+      <div id="cleanSummary" class="summary"></div>
+      <div class="opt"><span>Removed samples</span>
+        <select id="fillSel" title="What to draw where a sample was thrown out. Runs longer than 1 s always stay as gaps.">
+          <option value="interp">Interpolate</option>
+          <option value="hold">Hold last value</option>
+          <option value="gap">Leave a gap</option>
+        </select>
+      </div>
+      <label class="opt"><input type="checkbox" id="marksChk"> <span>Mark replaced samples with &times;</span></label>
+      <div class="opt"><span>Spike filter threshold</span>
+        <input type="number" id="spikeK" min="2" max="50" step="0.5" title="A sample is a spike if it is this many robust standard deviations (MAD) away from the median of its 11 neighbours">
+        <span>&times; MAD</span>
+      </div>
+      <div id="cleanList"></div>
+      <p class="hint">
+        <b>Read as</b> fixes negative numbers that the logger stored as unsigned 16-bit
+        (65534 &rarr; &minus;2). Use <b>int16 &divide;10</b> when the firmware divides the CAN value by 10 before logging.
+        Values outside <b>min&ndash;max</b> are removed. <b>Spikes</b> removes single-sample glitches.
+      </p>
+      <button id="cleanReset">Reset cleaning to defaults</button>
+    </section>
+
+    <section id="mathSec" hidden>
+      <h2>Math channels</h2>
+      <form id="mathForm" autocomplete="off">
+        <input id="mathIn" type="text" spellcheck="false" placeholder="Name [unit] = expression" aria-label="New math channel">
+        <button type="submit">Add</button>
+      </form>
+      <div id="mathErr" class="err" role="alert"></div>
+      <ul id="mathList"></ul>
+      <p class="hint">Use channel names, <code>t</code> (seconds) and <code>abs min max sqrt pow round clamp</code>&hellip;
+        e.g. <code>Power [kW] = BatteryVoltage * Current / 1000</code></p>
+    </section>
+
+    <section>
+      <h2>Controls</h2>
+      <ul class="help">
+        <li><b>Drag</b> across a graph to zoom to that range</li>
+        <li><b>Ctrl + scroll</b> (or pinch) to zoom around the pointer; sideways scroll pans</li>
+        <li><b>Shift + drag</b> or middle-drag to pan</li>
+        <li><b>Double-click</b> to zoom back out</li>
+        <li><b>Hover</b> moves one cursor across every graph; values show under each graph</li>
+        <li><b>Overview strip</b>: drag the window to move it, drag elsewhere to pick a range</li>
+        <li>Set <b>X</b> to a channel for an X&ndash;Y plot of the current time window</li>
+        <li>Right-click a graph &rarr; <b>Save image as&hellip;</b> for a PNG</li>
+      </ul>
+    </section>
+  </aside>
+
+  <main id="main">
+    <div id="empty" class="empty">
+      <div class="drop">
+        <strong>Drop a logger CSV here</strong>
+        <span>or</span>
+        <button class="primary" id="openBtn2">Open CSV&hellip;</button>
+        <span class="hint">Runs entirely in this page. Nothing is uploaded.</span>
+      </div>
+    </div>
+    <div id="work" hidden>
+      <div class="card ovcard">
+        <div class="ovhead"><span>Overview</span><span id="ovName"></span></div>
+        <canvas id="ov" role="img" aria-label="Whole-session overview; drag to choose the time window"></canvas>
+      </div>
+      <div id="graphs"></div>
+      <button id="addGraphBtn2" class="addg">+ Add graph</button>
+      <div id="tableWrap" class="card" hidden>
+        <div id="tableNote" class="muted"></div>
+        <div class="tscroll"><table id="tbl"></table></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="dropVeil"><div>Drop CSV to load</div></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+'use strict';
+
+// ---------------------------------------------------------------------------
+// What we know about Pedalbox logs (PedalboxRTOS26/src/SDCard.cpp)
+// ---------------------------------------------------------------------------
+// Older firmware wrote a 6-name header but 8 values per row; current firmware
+// adds BrakeLightActive. Pick the layout by column count when the header lies.
+const LAYOUTS = {
+  8: ['Time', 'APPS', 'BrakePressure', 'BatteryVoltage', 'Current', 'MotorSpeed', 'State', 'LVBatteryVoltage'],
+  9: ['Time', 'APPS', 'BrakePressure', 'BrakeLightActive', 'BatteryVoltage', 'Current', 'MotorSpeed', 'State', 'LVBatteryVoltage'],
+};
+const STATE_LABELS = { 0: 'Boot', 1: 'LV', 2: 'HV', 3: 'Startup', 4: 'Driver ready', 5: 'Fault' };
+// wrap: the firmware decodes signed 16-bit CAN values as unsigned, so small
+// negatives log as ~65535 (MotorSpeed) or ~6553 (Current, which is /10 first).
+const PROFILE = {
+  APPS:             { unit: '%',   min: 0,      max: 100,   discrete: false },
+  BrakePressure:    { unit: '',    min: 0,      max: 5000,  discrete: false },
+  BrakeLightActive: { unit: '',    min: 0,      max: 1,     discrete: true },
+  BatteryVoltage:   { unit: 'V',   min: 0,      max: 600,   discrete: false },
+  Current:          { unit: 'A',   min: -600,   max: 600,   discrete: false, wrap: 6553.6 },
+  MotorSpeed:       { unit: 'rpm', min: -10000, max: 10000, discrete: false, wrap: 65536 },
+  State:            { unit: '',    min: 0,      max: 5,     discrete: true, labels: STATE_LABELS },
+  LVBatteryVoltage: { unit: 'V',   min: 0,      max: 20,    discrete: false },
+};
+const WRAP_OPTS = [
+  { v: 0, label: 'as logged' },
+  { v: 65536, label: 'int16' },
+  { v: 6553.6, label: 'int16 ÷10' },
+  { v: 655.36, label: 'int16 ÷100' },
+];
+
+const F_UNWRAP = 1, F_RANGE = 2, F_SPIKE = 3, F_MISSING = 4;   // flag >= F_RANGE means "replaced"
+const MAX_SERIES = 8;
+const MAX_FILL_S = 1.0;          // never invent more than 1 s of data
+const SESSION_GAP_S = 1.0;       // spacing between logger restarts when stitched
+const STORE_KEY = 'fsae-telemetry-viewer-v1';
+const THEME_KEY = 'fsae-telemetry-viewer-theme';
+const FONT = '11px system-ui, -apple-system, "Segoe UI", sans-serif';
+
+const MATH_ENV = {
+  abs: Math.abs, min: Math.min, max: Math.max, sqrt: Math.sqrt, pow: Math.pow, exp: Math.exp,
+  log: Math.log, log10: Math.log10, sin: Math.sin, cos: Math.cos, tan: Math.tan, atan2: Math.atan2,
+  hypot: Math.hypot, round: Math.round, floor: Math.floor, ceil: Math.ceil, sign: Math.sign,
+  clamp: (x, a, b) => Math.min(Math.max(x, a), b), PI: Math.PI,
+};
+const RESERVED = new Set(('break case catch class const continue debugger default delete do else enum export extends ' +
+  'false finally for function if implements import in instanceof interface let new null package private protected ' +
+  'public return static super switch this throw true try typeof var void while with yield await arguments eval ' +
+  'undefined NaN Infinity t Time').split(' ').concat(Object.keys(MATH_ENV)));
+
+// ---------------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------------
+let LOG = null;                 // parsed file
+let CH = [];                    // channels (raw + math): {name, unit, discrete, labels, slot, math?, dec}
+let CHMAP = new Map();
+let CLEAN = {};                 // name -> {v: Float64Array, flag: Uint8Array, counts}
+let MATH = [];                  // {name, unit, expr, slot, fn, args}
+let GRAPHS = [];
+let CFG = { fill: 'interp', marks: true, spikeK: 6, ch: {} };
+let OVR = {};                   // user overrides of per-channel cleaning, persisted
+const VIEW = { x0: 0, x1: 1, f0: 0, f1: 1, session: -1 };
+let CURSOR = -1;
+let TH = {};
+let DATA_VER = 0, THEME_VER = 0;
+let normCache = new Map();
+let tableOpen = false;
+
+const $ = (s) => document.querySelector(s);
+function el(tag, props, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(props || {})) {
+    if (v === undefined || v === null || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k === 'text') e.textContent = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? '' : v);
+  }
+  for (const kid of kids) if (kid !== null && kid !== undefined) e.append(kid);
+  return e;
+}
+const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
+const num = (s) => (s === '' || s === null || s === undefined || !Number.isFinite(+s)) ? null : +s;
+const slotOf = (name) => ((CHMAP.get(name)?.slot) ?? 0) % 8;
+const colorVar = (name) => `var(--s${slotOf(name) + 1})`;
+const colorOf = (name) => TH.series[slotOf(name)];
+// Within one graph no two series may share a hue: a channel keeps its own slot
+// unless an earlier series in the graph already holds it.
+function graphSlots(g) {
+  const used = new Set(), m = new Map();
+  for (const n of g.ys) {
+    let s = slotOf(n);
+    if (used.has(s)) for (let k = 0; k < 8; k++) if (!used.has(k)) { s = k; break; }
+    used.add(s); m.set(n, s);
+  }
+  return m;
+}
+
+function toast(msg, ms = 4000) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('show'), ms);
+}
+
+// ---------------------------------------------------------------------------
+// Parsing
+// ---------------------------------------------------------------------------
+function cleanName(s, j, used) {
+  let n = String(s || '').trim().replace(/\s+/g, '').replace(/[^A-Za-z0-9_]/g, '_');
+  if (!n) n = `Col${j + 1}`;
+  if (/^\d/.test(n)) n = '_' + n;
+  if (RESERVED.has(n) && n !== 'Time') n += '_';
+  let u = n, k = 2;
+  while (used.has(u)) u = `${n}_${k++}`;
+  used.add(u);
+  return u;
+}
+
+function median(a) {
+  if (!a.length) return NaN;
+  const s = Float64Array.from(a).sort();
+  return s[s.length >> 1];
+}
+
+function parseLog(text) {
+  const lines = text.split(/\r\n|\n|\r/);
+  const special = /^(nan|-?inf|ovf)$/i;       // what Arduino's print(float) emits
+  const rows = [], hdrFlag = [], headers = [], lenCount = new Map();
+  let bad = 0, sawHeader = false;
+
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line) continue;
+    const f = line.split(',');
+    const first = f[0].trim();
+    if (special.test(first)) { bad++; continue; }
+    if (first === '' || !Number.isFinite(Number(first))) {
+      if (/[A-Za-z]/.test(line)) { headers.push(f.map((s) => s.trim())); sawHeader = true; }
+      else bad++;
+      continue;
+    }
+    const r = new Array(f.length);
+    let ok = true;
+    for (let j = 0; j < f.length; j++) {
+      const s = f[j].trim();
+      if (s === '' || special.test(s)) { r[j] = NaN; continue; }
+      const v = Number(s);
+      if (Number.isNaN(v)) { ok = false; break; }
+      r[j] = v;
+    }
+    if (!ok) { bad++; continue; }
+    rows.push(r); hdrFlag.push(sawHeader && rows.length > 1); sawHeader = false;
+    lenCount.set(r.length, (lenCount.get(r.length) || 0) + 1);
+  }
+  if (rows.length < 2) throw new Error('No numeric data rows found in this file.');
+
+  let ncol = 0, best = 0;
+  for (const [len, c] of lenCount) if (c > best) { best = c; ncol = len; }
+
+  // Column names: trust a header only if it matches the row width.
+  let names = null, note = '';
+  const hdr = headers.find((h) => h.length === ncol);
+  const firstHdr = headers[0] || null;
+  if (hdr) names = hdr;
+  else if (LAYOUTS[ncol] && (!firstHdr || firstHdr.every((n) => LAYOUTS[ncol].includes(n.replace(/\s+/g, ''))))) {
+    names = LAYOUTS[ncol];
+    note = firstHdr
+      ? `Header names ${firstHdr.length} columns but rows have ${ncol}. Used the Pedalbox ${ncol}-column layout, so the last columns are ${LAYOUTS[ncol].slice(firstHdr.length).join(', ')}.`
+      : `No header row. Assumed the Pedalbox ${ncol}-column layout.`;
+  } else {
+    names = Array.from({ length: ncol }, (_, j) => (firstHdr && firstHdr[j]) || '');
+    if (firstHdr) note = `Header names ${firstHdr.length} columns but rows have ${ncol}. Unnamed columns are called Col1, Col2, ...`;
+  }
+  const used = new Set();
+  names = names.map((n, j) => cleanName(n, j, used));
+
+  let tIdx = names.findIndex((n) => /^time/i.test(n));
+  if (tIdx < 0) tIdx = 0;
+
+  const kept = [], keptHdr = [];
+  for (let k = 0; k < rows.length; k++) {
+    if (rows[k].length !== ncol || !Number.isFinite(rows[k][tIdx])) { bad++; if (hdrFlag[k] && k + 1 < rows.length) hdrFlag[k + 1] = true; continue; }
+    kept.push(rows[k]); keptHdr.push(hdrFlag[k]);
+  }
+  const N = kept.length;
+  if (N < 2) throw new Error('Not enough complete rows to plot.');
+
+  const cols = names.map(() => new Float64Array(N));
+  for (let k = 0; k < N; k++) { const r = kept[k]; for (let j = 0; j < ncol; j++) cols[j][k] = r[j]; }
+  const tRaw = cols[tIdx];
+
+  const dts = [];
+  const stride = Math.max(1, Math.floor(N / 20000));
+  for (let k = 1; k < N; k += stride) { const d = tRaw[k] - tRaw[k - 1]; if (d > 0) dts.push(d); }
+  const dtRaw = median(dts) || 1;
+  const scale = dtRaw >= 0.5 ? 1000 : 1;      // Pedalbox logs millis(); fall back to seconds
+
+  // A logger restart (millis() going backwards) or a repeated header starts a new session.
+  const sessions = [];
+  let s0 = 0;
+  for (let k = 1; k <= N; k++) {
+    if (k === N || tRaw[k] < tRaw[k - 1] || keptHdr[k]) { sessions.push({ i0: s0, i1: k - 1 }); s0 = k; }
+  }
+  const t = new Float64Array(N), brk = new Uint8Array(N);
+  let offset = 0;
+  for (const s of sessions) {
+    const base = tRaw[s.i0];
+    for (let k = s.i0; k <= s.i1; k++) t[k] = (tRaw[k] - base) / scale + offset;
+    brk[s.i0] = 1;
+    s.t0 = t[s.i0]; s.t1 = t[s.i1];
+    offset = s.t1 + SESSION_GAP_S;
+  }
+  const dt = dtRaw / scale;
+  const gapThr = Math.max(10 * dt, 0.2);
+  for (let k = 1; k < N; k++) if (t[k] - t[k - 1] > gapThr) brk[k] = 1;
+
+  const raw = {}, channels = [];
+  names.forEach((n, j) => {
+    if (j === tIdx) return;
+    raw[n] = cols[j];
+    const p = PROFILE[n];
+    channels.push({
+      name: n, unit: p ? p.unit : '', labels: p && p.labels ? p.labels : null,
+      discrete: p ? p.discrete : looksDiscrete(cols[j]),
+    });
+  });
+  return { N, ncol, names, tIdx, tRaw, t, brk, dt, sessions, raw, channels, bad, note, timeName: names[tIdx] };
+}
+
+function looksDiscrete(v) {
+  const seen = new Set();
+  for (let i = 0; i < v.length; i++) {
+    const x = v[i];
+    if (!Number.isFinite(x)) continue;
+    if (x !== Math.round(x)) return false;
+    seen.add(x);
+    if (seen.size > 6) return false;
+  }
+  let lo = Infinity, hi = -Infinity; for (const x of seen) { lo = Math.min(lo, x); hi = Math.max(hi, x); }
+  return seen.size > 1 && hi - lo <= 10;
+}
+
+// Unknown channel: guess "signed value stored unsigned" if every value sits either
+// near zero or just under the 16-bit ceiling, with nothing in between.
+function detectWrap(v) {
+  let mx = -Infinity, n = 0;
+  for (let i = 0; i < v.length; i++) {
+    const x = v[i];
+    if (!Number.isFinite(x)) continue;
+    if (x < 0) return 0;
+    n++; if (x > mx) mx = x;
+  }
+  for (const S of [65536, 6553.6, 655.36]) {
+    if (mx <= S && mx >= S * 0.98) {
+      let mid = 0;
+      for (let i = 0; i < v.length; i++) if (v[i] > S * 0.1 && v[i] < S * 0.9) mid++;
+      if (mid <= n * 0.01) return S;
+    }
+  }
+  return 0;
+}
+
+function defaultChCfg(c) {
+  const p = PROFILE[c.name];
+  if (p) return { wrap: p.wrap || 0, min: p.min, max: p.max, spike: false };
+  return { wrap: detectWrap(LOG.raw[c.name]), min: '', max: '', spike: false };
+}
+
+// ---------------------------------------------------------------------------
+// Cleaning
+// ---------------------------------------------------------------------------
+function cleanChannel(raw, c, cc) {
+  const n = raw.length, v = new Float64Array(n), flag = new Uint8Array(n);
+  const counts = { unwrap: 0, range: 0, spike: 0, missing: 0 };
+  const lo = num(cc.min), hi = num(cc.max), span = +cc.wrap || 0;
+  for (let i = 0; i < n; i++) {
+    let x = raw[i];
+    if (!Number.isFinite(x)) { v[i] = NaN; flag[i] = F_MISSING; counts.missing++; continue; }
+    if (span && x >= span / 2) { x -= span; flag[i] = F_UNWRAP; counts.unwrap++; }
+    if ((lo !== null && x < lo) || (hi !== null && x > hi)) {
+      if (flag[i] === F_UNWRAP) counts.unwrap--;
+      v[i] = NaN; flag[i] = F_RANGE; counts.range++; continue;
+    }
+    v[i] = x;
+  }
+  if (cc.spike && !c.discrete) counts.spike = hampel(v, flag, CFG.spikeK);
+  fillGaps(v, flag, c.discrete && CFG.fill === 'interp' ? 'hold' : CFG.fill);
+  return { v, flag, counts };
+}
+
+// Hampel filter: drop samples far from the median of their neighbours.
+// Steps survive (the median follows them); lone glitches don't.
+function hampel(v, flag, k) {
+  const n = v.length, h = 5, src = Float64Array.from(v), win = [];
+  const sample = [];
+  for (let i = 0; i < n; i += Math.max(1, Math.floor(n / 5000))) if (src[i] === src[i]) sample.push(src[i]);
+  sample.sort((a, b) => a - b);
+  const spread = sample.length ? sample[Math.floor(sample.length * 0.99)] - sample[Math.floor(sample.length * 0.01)] : 0;
+  const floor = Math.max(spread * 0.02, 1e-9);   // ignore flicker of a count or two on flat signals
+  let removed = 0;
+  for (let i = 0; i < n; i++) {
+    const x = src[i];
+    if (x !== x) continue;
+    win.length = 0;
+    for (let j = Math.max(0, i - h); j <= Math.min(n - 1, i + h); j++) if (src[j] === src[j]) win.push(src[j]);
+    if (win.length < 5) continue;
+    win.sort((a, b) => a - b);
+    const med = win[win.length >> 1];
+    for (let j = 0; j < win.length; j++) win[j] = Math.abs(win[j] - med);
+    win.sort((a, b) => a - b);
+    const mad = 1.4826 * win[win.length >> 1];
+    if (Math.abs(x - med) > Math.max(k * mad, floor)) { v[i] = NaN; flag[i] = F_SPIKE; removed++; }
+  }
+  return removed;
+}
+
+function fillGaps(v, flag, mode) {
+  if (mode === 'gap') return;
+  const t = LOG.t, brk = LOG.brk, n = v.length;
+  for (let i = 0; i < n; i++) {
+    if (v[i] === v[i]) continue;
+    let j = i; while (j < n && v[j] !== v[j]) j++;        // [i, j) is a run of removed samples
+    const a = i - 1, b = j;
+    let broken = false;
+    for (let k = i; k < j; k++) if (brk[k]) { broken = true; break; }
+    if (a >= 0 && !broken) {
+      if (mode === 'interp' && b < n && !brk[b] && t[b] - t[a] <= MAX_FILL_S) {
+        const span = (t[b] - t[a]) || 1;
+        for (let k = i; k < j; k++) v[k] = v[a] + (v[b] - v[a]) * (t[k] - t[a]) / span;
+      } else if (mode === 'hold' && t[j - 1] - t[a] <= MAX_FILL_S) {
+        for (let k = i; k < j; k++) v[k] = v[a];
+      }
+    }
+    i = j;
+  }
+}
+
+function decimalsFor(v, c) {
+  if (c.discrete) return 0;
+  let allInt = true, lo = Infinity, hi = -Infinity;
+  for (let i = 0; i < v.length; i++) {
+    const x = v[i];
+    if (x !== x) continue;
+    if (allInt && x !== Math.round(x)) allInt = false;
+    if (x < lo) lo = x; if (x > hi) hi = x;
+  }
+  if (allInt) return 0;
+  const r = hi - lo;
+  return r >= 100 ? 1 : r >= 1 ? 2 : 3;
+}
+
+function reclean() {
+  if (!LOG) return;
+  for (const c of CH) if (!c.math) CLEAN[c.name] = cleanChannel(LOG.raw[c.name], c, CFG.ch[c.name]);
+  recomputeMath();
+  for (const c of CH) c.dec = decimalsFor(CLEAN[c.name].v, c);
+  normCache.clear();
+  DATA_VER++;
+  renderCleanSummary();
+  requestDraw(); scheduleTable();
+}
+
+// ---------------------------------------------------------------------------
+// Math channels
+// ---------------------------------------------------------------------------
+function rebuildMath(defs) {
+  const rawCh = CH.filter((c) => !c.math);
+  const out = [], dropped = [];
+  const avail = rawCh.map((c) => c.name);
+  for (const d of defs) {
+    try {
+      const m = compileMath(d, avail);
+      out.push(m); avail.push(m.name);
+    } catch (e) { dropped.push(`${d.name}: ${e.message}`); }
+  }
+  MATH = out;
+  CH = rawCh.concat(MATH.map((m) => ({ name: m.name, unit: m.unit, discrete: false, labels: null, slot: m.slot, math: m })));
+  CHMAP = new Map(CH.map((c) => [c.name, c]));
+  recomputeMath();
+  for (const c of CH) if (c.math) c.dec = decimalsFor(CLEAN[c.name].v, c);
+  normCache.clear();
+  DATA_VER++;
+  return dropped;
+}
+
+function compileMath(d, avail) {
+  if (!/^[A-Za-z_]\w*$/.test(d.name)) throw new Error('name must be letters, digits or _');
+  if (RESERVED.has(d.name) || avail.includes(d.name)) throw new Error(`"${d.name}" is already taken`);
+  let fn;
+  try { fn = new Function(...Object.keys(MATH_ENV), 't', ...avail, `"use strict"; return (${d.expr});`); }
+  catch (e) { throw new Error(e.message); }
+  const m = { name: d.name, unit: d.unit || '', expr: d.expr, slot: d.slot, fn, args: avail.slice() };
+  // Probe one row so typos in channel names fail now, not silently as NaN.
+  const probe = Object.values(MATH_ENV).concat([0], m.args.map((n) => CLEAN[n] ? CLEAN[n].v[0] : 0));
+  fn.apply(null, probe);
+  return m;
+}
+
+function recomputeMath() {
+  const env = Object.values(MATH_ENV), base = env.length, n = LOG.N;
+  for (const m of MATH) {
+    const cols = m.args.map((a) => CLEAN[a].v);
+    const args = env.concat(new Array(cols.length + 1).fill(0));
+    const out = new Float64Array(n);
+    for (let i = 0; i < n; i++) {
+      args[base] = LOG.t[i];
+      for (let k = 0; k < cols.length; k++) args[base + 1 + k] = cols[k][i];
+      let r;
+      try { r = m.fn.apply(null, args); } catch (e) { r = NaN; }
+      out[i] = typeof r === 'number' ? r : typeof r === 'boolean' ? +r : NaN;
+    }
+    CLEAN[m.name] = { v: out, flag: new Uint8Array(n), counts: null };
+  }
+}
+
+function addMathFromText(text) {
+  const m = /^\s*([A-Za-z_]\w*)\s*(?:\[([^\]]*)\])?\s*=\s*([\s\S]+)$/.exec(text);
+  if (!m) throw new Error('Write it as  Name [unit] = expression');
+  const slot = CH.reduce((s, c) => Math.max(s, c.slot), -1) + 1;
+  const defs = MATH.map((x) => ({ name: x.name, unit: x.unit, expr: x.expr, slot: x.slot }));
+  const d = { name: m[1], unit: (m[2] || '').trim(), expr: m[3].trim(), slot };
+  compileMath(d, CH.map((c) => c.name));        // throws with a readable message
+  defs.push(d);
+  rebuildMath(defs);
+  afterChannelsChanged();
+}
+
+function removeMath(name) {
+  const defs = MATH.filter((m) => m.name !== name).map((x) => ({ name: x.name, unit: x.unit, expr: x.expr, slot: x.slot }));
+  const dropped = rebuildMath(defs);
+  if (dropped.length) toast('Also removed channels that used it: ' + dropped.map((s) => s.split(':')[0]).join(', '));
+  afterChannelsChanged();
+}
+
+function afterChannelsChanged() {
+  for (const g of GRAPHS) {
+    g.ys = g.ys.filter((n) => CHMAP.has(n));
+    if (g.x !== 'Time' && !CHMAP.has(g.x)) { g.x = 'Time'; g.xy = null; }
+    refreshGraphControls(g);
+  }
+  renderMathList();
+  requestDraw(); scheduleTable(); saveSoon();
+}
+
+function renderMathList() {
+  const ul = $('#mathList'); ul.textContent = '';
+  for (const m of MATH) {
+    ul.append(el('li', {},
+      el('span', { class: 'key', style: `background:${colorVar(m.name)}` }),
+      el('code', { text: `${m.name}${m.unit ? ` [${m.unit}]` : ''} = ${m.expr}` }),
+      el('button', { class: 'icon', title: `Remove ${m.name}`, 'aria-label': `Remove ${m.name}`, text: '✕', onclick: () => removeMath(m.name) })));
+  }
+  const inp = $('#mathIn');
+  if (!inp.value && CHMAP.has('BatteryVoltage') && CHMAP.has('Current') && !CHMAP.has('Power')) {
+    inp.value = 'Power [kW] = BatteryVoltage * Current / 1000';
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Load a file
+// ---------------------------------------------------------------------------
+function loadStore() { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch (e) { return {}; } }
+let saveTimer = 0;
+function saveSoon() { clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 300); }
+function saveNow() {
+  if (!LOG) return;
+  const data = {
+    graphs: GRAPHS.map((g) => ({ x: g.x, ys: g.ys, norm: g.norm, ymin: g.ymin, ymax: g.ymax, h: g.h })),
+    math: MATH.map((m) => ({ name: m.name, unit: m.unit, expr: m.expr })),
+    clean: { fill: CFG.fill, marks: CFG.marks, spikeK: CFG.spikeK, ovr: OVR },
+  };
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); } catch (e) { /* storage full or blocked */ }
+}
+
+function loadText(text, fileName) {
+  let log;
+  try { log = parseLog(text); } catch (e) { toast(e.message, 6000); return; }
+  log.fileName = fileName;
+  LOG = log;
+  CH = log.channels.map((c, k) => ({ ...c, slot: k }));
+  CHMAP = new Map(CH.map((c) => [c.name, c]));
+  CLEAN = {};
+
+  const saved = loadStore();
+  const sc = saved.clean || {};
+  OVR = sc.ovr || {};
+  CFG = {
+    fill: ['interp', 'hold', 'gap'].includes(sc.fill) ? sc.fill : 'interp',
+    marks: sc.marks !== undefined ? !!sc.marks : true,
+    spikeK: num(sc.spikeK) || 6,
+    ch: {},
+  };
+  for (const c of CH) CFG.ch[c.name] = { ...defaultChCfg(c), ...(OVR[c.name] || {}) };
+  MATH = [];
+  reclean();
+  let slot = CH.length;
+  const dropped = rebuildMath((saved.math || []).map((m) => ({ ...m, slot: slot++ })));
+  if (dropped.length) toast('Skipped saved math channels that do not fit this file: ' + dropped.join('; '), 6000);
+
+  // Graphs: restore the last layout where its channels exist, else sensible defaults.
+  for (const g of GRAPHS) disposeGraph(g);
+  GRAPHS = [];
+  const exists = (n) => CHMAP.has(n);
+  let specs = (saved.graphs || []).map((g) => ({ ...g, ys: (g.ys || []).filter(exists), x: exists(g.x) ? g.x : 'Time' }))
+    .filter((g) => g.ys.length);
+  if (!specs.length) specs = defaultGraphs();
+  specs.forEach(addGraph);
+
+  // Session picker
+  const sel = $('#sessSel'); sel.textContent = '';
+  if (LOG.sessions.length > 1) sel.append(el('option', { value: '-1', text: `All ${LOG.sessions.length} sessions` }));
+  LOG.sessions.forEach((s, k) => sel.append(el('option', { value: String(k),
+    text: `Session ${k + 1} · ${fmtDur(s.t1 - s.t0)} · ${(s.i1 - s.i0 + 1).toLocaleString()} rows` })));
+  sel.disabled = LOG.sessions.length < 2;
+  $('#sessWrap').hidden = false;
+  setSession(LOG.sessions.length > 1 ? -1 : 0);
+
+  $('#fileName').textContent = fileName;
+  document.title = `${fileName} – FSAE Telemetry Viewer`;
+  $('#empty').hidden = true; $('#work').hidden = false;
+  $('#cleanSec').hidden = false; $('#mathSec').hidden = false;
+  for (const id of ['#resetBtn', '#addGraphBtn', '#tableBtn', '#exportBtn']) $(id).disabled = false;
+  $('#fillSel').value = CFG.fill; $('#marksChk').checked = CFG.marks; $('#spikeK').value = CFG.spikeK;
+  renderInfo(); renderCleanPanel(); renderCleanSummary(); renderMathList();
+  requestDraw(); scheduleTable();
+}
+
+function defaultGraphs() {
+  const want = [['APPS', 150], ['MotorSpeed', 170], ['Current', 170], ['BatteryVoltage', 150], ['State', 110]]
+    .filter(([n]) => CHMAP.has(n));
+  if (want.length) return want.map(([n, h]) => ({ x: 'Time', ys: [n], h }));
+  return CH.slice(0, 3).map((c) => ({ x: 'Time', ys: [c.name] }));
+}
+
+function setSession(k) {
+  VIEW.session = k;
+  if (k < 0) { VIEW.f0 = LOG.t[0]; VIEW.f1 = LOG.t[LOG.N - 1]; }
+  else { VIEW.f0 = LOG.sessions[k].t0; VIEW.f1 = LOG.sessions[k].t1; }
+  if (VIEW.f1 - VIEW.f0 < 0.05) VIEW.f1 = VIEW.f0 + 0.05;
+  VIEW.x0 = VIEW.f0; VIEW.x1 = VIEW.f1;
+  for (const g of GRAPHS) g.xy = null;
+  normCache.clear(); DATA_VER++;
+  $('#sessSel').value = String(k);
+  onViewChange();
+}
+
+function openFile(file) {
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = () => loadText(String(r.result), file.name);
+  r.onerror = () => toast('Could not read that file.');
+  r.readAsText(file);
+}
+
+// ---------------------------------------------------------------------------
+// Side panel
+// ---------------------------------------------------------------------------
+function fmtDur(s) {
+  if (s < 60) return `${s.toFixed(1)} s`;
+  const m = Math.floor(s / 60);
+  return `${m} min ${Math.round(s - m * 60)} s`;
+}
+function fmtTime(t) {
+  if (Math.abs(t) < 60) return `${t.toFixed(3)} s`;
+  const m = Math.floor(t / 60), s = t - m * 60;
+  return `${m}:${s.toFixed(3).padStart(6, '0')}`;
+}
+function fmtVal(c, v) {
+  if (!Number.isFinite(v)) return '—';
+  const s = v.toFixed(c.dec || 0);
+  return c.labels && c.labels[v] !== undefined ? `${s} ${c.labels[v]}` : s;
+}
+
+function renderInfo() {
+  const L = LOG;
+  const dur = L.sessions.reduce((a, s) => a + (s.t1 - s.t0), 0);
+  const rows = [
+    ['File', L.fileName],
+    ['Rows', L.N.toLocaleString()],
+    ['Duration', fmtDur(dur)],
+    ['Sample rate', `${Math.round(1 / L.dt)} Hz (every ${(L.dt * 1000).toFixed(0)} ms)`],
+    ['Sessions', L.sessions.length > 1 ? `${L.sessions.length} (logger restarted)` : '1'],
+    ['Skipped lines', String(L.bad)],
+  ];
+  const dl = el('dl', { class: 'info' });
+  for (const [k, v] of rows) dl.append(el('dt', { text: k }), el('dd', { text: v }));
+  const box = $('#info'); box.textContent = ''; box.className = '';
+  box.append(dl);
+  if (L.note) box.append(el('div', { class: 'note', text: L.note }));
+}
+
+function renderCleanPanel() {
+  const box = $('#cleanList'); box.textContent = '';
+  for (const c of CH) {
+    if (c.math) continue;
+    const cc = CFG.ch[c.name];
+    const setOvr = (key, val) => {
+      cc[key] = val;
+      (OVR[c.name] = OVR[c.name] || {})[key] = val;
+      recleanSoon(); saveSoon();
+    };
+    const wrapSel = el('select', { 'aria-label': `${c.name}: read raw values as`, title: 'How to read raw values' });
+    for (const o of WRAP_OPTS) wrapSel.append(el('option', { value: String(o.v), text: o.label }));
+    wrapSel.value = String(cc.wrap || 0);
+    wrapSel.addEventListener('change', () => setOvr('wrap', +wrapSel.value));
+    const mn = el('input', { type: 'number', step: 'any', placeholder: 'none', 'aria-label': `${c.name} minimum` });
+    const mx = el('input', { type: 'number', step: 'any', placeholder: 'none', 'aria-label': `${c.name} maximum` });
+    mn.value = cc.min ?? ''; mx.value = cc.max ?? '';
+    mn.addEventListener('input', () => setOvr('min', mn.value));
+    mx.addEventListener('input', () => setOvr('max', mx.value));
+    const sp = el('input', { type: 'checkbox', 'aria-label': `${c.name} spike filter` });
+    sp.checked = !!cc.spike; sp.disabled = c.discrete;
+    sp.addEventListener('change', () => setOvr('spike', sp.checked));
+    box.append(el('div', { class: 'crow' },
+      el('div', { class: 'crow-top' },
+        el('span', { class: 'key', style: `background:${colorVar(c.name)}` }),
+        el('strong', { text: c.name + (c.unit ? ` (${c.unit})` : '') }),
+        el('span', { class: 'cres', 'data-ch': c.name })),
+      el('div', { class: 'crow-ctl' },
+        el('span', { text: 'Read as' }), wrapSel, mn, el('span', { text: '–' }), mx,
+        el('label', { class: 'field', title: c.discrete ? 'Not used on on/off or state channels' : 'Remove single-sample glitches' }, sp, 'Spikes'))));
+  }
+}
+
+function renderCleanSummary() {
+  if (!LOG) return;
+  const tot = { unwrap: 0, range: 0, spike: 0, missing: 0 };
+  for (const c of CH) {
+    if (c.math) continue;
+    const k = CLEAN[c.name].counts;
+    for (const key in tot) tot[key] += k[key];
+    const parts = [];
+    if (k.unwrap) parts.push(`${k.unwrap.toLocaleString()} fixed`);
+    const rem = k.range + k.spike + k.missing;
+    if (rem) parts.push(`${rem.toLocaleString()} removed`);
+    const span = document.querySelector(`.cres[data-ch="${c.name}"]`);
+    if (span) span.textContent = parts.join(' · ') || 'clean';
+  }
+  const lines = [];
+  if (tot.unwrap) lines.push(`Recovered ${tot.unwrap.toLocaleString()} negative values that were logged as unsigned (e.g. 65535).`);
+  if (tot.range) lines.push(`Removed ${tot.range.toLocaleString()} out-of-range samples.`);
+  if (tot.spike) lines.push(`Removed ${tot.spike.toLocaleString()} spikes.`);
+  if (tot.missing) lines.push(`${tot.missing.toLocaleString()} blank or NaN values.`);
+  $('#cleanSummary').textContent = lines.join(' ') || 'No bad samples found with the current settings.';
+}
+
+let recleanTimer = 0;
+function recleanSoon() { clearTimeout(recleanTimer); recleanTimer = setTimeout(reclean, 150); }
+
+// ---------------------------------------------------------------------------
+// Graph panes
+// ---------------------------------------------------------------------------
+function addGraph(spec) {
+  const g = {
+    x: spec.x || 'Time', ys: (spec.ys || []).slice(0, MAX_SERIES), norm: !!spec.norm,
+    ymin: spec.ymin ?? '', ymax: spec.ymax ?? '', h: spec.h || 170,
+    xy: null, drag: null, geom: null, base: null, baseKey: '', legendSig: null, legendItems: [], series: [],
+  };
+  g.xSel = el('select', { 'aria-label': 'X axis', title: 'X axis: Time, or a channel for an X–Y plot' });
+  g.chips = el('div', { class: 'chips' });
+  g.addSel = el('select', { 'aria-label': 'Add a channel to this graph' });
+  g.normChk = el('input', { type: 'checkbox' }); g.normChk.checked = g.norm;
+  g.yminIn = el('input', { type: 'number', step: 'any', placeholder: 'auto', 'aria-label': 'Y axis minimum' });
+  g.ymaxIn = el('input', { type: 'number', step: 'any', placeholder: 'auto', 'aria-label': 'Y axis maximum' });
+  g.yminIn.value = g.ymin; g.ymaxIn.value = g.ymax;
+  const up = el('button', { class: 'icon', title: 'Move up', 'aria-label': 'Move graph up', text: '↑' });
+  const down = el('button', { class: 'icon', title: 'Move down', 'aria-label': 'Move graph down', text: '↓' });
+  const del = el('button', { class: 'icon', title: 'Remove graph', 'aria-label': 'Remove graph', text: '✕' });
+  const head = el('div', { class: 'graph-head' },
+    el('label', { class: 'field' }, 'X', g.xSel),
+    el('span', { class: 'field', text: 'Y' }), g.chips, g.addSel,
+    el('label', { class: 'field', title: 'Scale each channel to 0–100 % of its range so different units can share one axis' }, g.normChk, 'Normalize'),
+    el('label', { class: 'field', title: 'Fixed Y range (leave blank for auto)' }, 'Y range', g.yminIn, '–', g.ymaxIn),
+    el('span', { class: 'spacer' }), up, down, del);
+  g.plot = el('div', { class: 'plot' });
+  g.plot.style.height = g.h + 'px';
+  g.cv = el('canvas', { role: 'img', 'aria-label': 'Graph' });
+  g.plot.append(g.cv);
+  g.legend = el('div', { class: 'legend', 'aria-live': 'off' });
+  g.root = el('section', { class: 'graph card' }, head, g.plot, g.legend);
+  $('#graphs').append(g.root);
+
+  g.xSel.addEventListener('change', () => { g.x = g.xSel.value; g.xy = null; changed(g); });
+  g.addSel.addEventListener('change', () => {
+    if (g.addSel.value && g.ys.length < MAX_SERIES) g.ys.push(g.addSel.value);
+    changed(g);
+  });
+  g.normChk.addEventListener('change', () => { g.norm = g.normChk.checked; g.xy = null; changed(g); });
+  g.yminIn.addEventListener('input', () => { g.ymin = g.yminIn.value; requestDraw(); saveSoon(); });
+  g.ymaxIn.addEventListener('input', () => { g.ymax = g.ymaxIn.value; requestDraw(); saveSoon(); });
+  up.addEventListener('click', () => moveGraph(g, -1));
+  down.addEventListener('click', () => moveGraph(g, 1));
+  del.addEventListener('click', () => { disposeGraph(g); GRAPHS = GRAPHS.filter((x) => x !== g); requestDraw(); saveSoon(); });
+
+  g.ro = new ResizeObserver(() => {
+    const h = Math.round(g.plot.getBoundingClientRect().height);
+    if (h && h !== g.h) { g.h = h; saveSoon(); }
+    requestDraw();
+  });
+  g.ro.observe(g.plot);
+  wireCanvas(g);
+  GRAPHS.push(g);
+  refreshGraphControls(g);
+  return g;
+}
+
+function changed(g) { refreshGraphControls(g); requestDraw(); saveSoon(); }
+
+function disposeGraph(g) { g.ro.disconnect(); g.root.remove(); }
+
+function moveGraph(g, d) {
+  const i = GRAPHS.indexOf(g), j = i + d;
+  if (j < 0 || j >= GRAPHS.length) return;
+  GRAPHS.splice(i, 1); GRAPHS.splice(j, 0, g);
+  for (const x of GRAPHS) $('#graphs').append(x.root);
+  requestDraw(); saveSoon();
+}
+
+function refreshGraphControls(g) {
+  g.xSel.textContent = '';
+  g.xSel.append(el('option', { value: 'Time', text: 'Time' }));
+  for (const c of CH) g.xSel.append(el('option', { value: c.name, text: c.name }));
+  g.xSel.value = g.x;
+
+  g.slots = graphSlots(g);
+  g.chips.textContent = '';
+  for (const name of g.ys) {
+    g.chips.append(el('span', { class: 'chip' },
+      el('span', { class: 'key', style: `background:var(--s${g.slots.get(name) + 1})` }),
+      el('span', { text: name }),
+      el('button', { title: `Remove ${name}`, 'aria-label': `Remove ${name} from graph`, text: '✕',
+        onclick: () => { g.ys = g.ys.filter((n) => n !== name); changed(g); } })));
+  }
+  g.addSel.textContent = '';
+  g.addSel.append(el('option', { value: '', text: g.ys.length >= MAX_SERIES ? 'Graph full' : '+ Channel' }));
+  for (const c of CH) if (!g.ys.includes(c.name)) g.addSel.append(el('option', { value: c.name, text: c.name }));
+  g.addSel.value = '';
+  g.addSel.disabled = g.ys.length >= MAX_SERIES;
+  g.legendSig = null;
+}
+
+// ---------------------------------------------------------------------------
+// View / zoom
+// ---------------------------------------------------------------------------
+function setView(a, b) {
+  const fw = VIEW.f1 - VIEW.f0;
+  const minW = Math.max(fw * 1e-5, (LOG ? LOG.dt : 0.01) * 4);
+  if (b - a < minW) { const c = (a + b) / 2; a = c - minW / 2; b = c + minW / 2; }
+  const w = b - a;
+  if (w >= fw) { a = VIEW.f0; b = VIEW.f1; }
+  else {
+    if (a < VIEW.f0) { a = VIEW.f0; b = a + w; }
+    if (b > VIEW.f1) { b = VIEW.f1; a = b - w; }
+  }
+  VIEW.x0 = a; VIEW.x1 = b;
+  onViewChange();
+}
+function resetView() { for (const g of GRAPHS) g.xy = null; setView(VIEW.f0, VIEW.f1); }
+function onViewChange() {
+  const zoomed = VIEW.x1 - VIEW.x0 < (VIEW.f1 - VIEW.f0) * 0.999;
+  $('#rangeLbl').textContent = LOG ? `${fmtTime(VIEW.x0)} – ${fmtTime(VIEW.x1)}${zoomed ? ` (${fmtDur(VIEW.x1 - VIEW.x0)})` : ''}` : '';
+  requestDraw(); scheduleTable();
+}
+
+function lowerBound(a, x) { let lo = 0, hi = a.length; while (lo < hi) { const m = (lo + hi) >> 1; if (a[m] < x) lo = m + 1; else hi = m; } return lo; }
+function upperBound(a, x) { let lo = 0, hi = a.length; while (lo < hi) { const m = (lo + hi) >> 1; if (a[m] <= x) lo = m + 1; else hi = m; } return lo; }
+function nearestIdx(x) {
+  const t = LOG.t;
+  let i = Math.min(lowerBound(t, x), t.length - 1);
+  if (i > 0 && x - t[i - 1] < t[i] - x) i--;
+  return i;
+}
+function visIdx() { return [lowerBound(LOG.t, VIEW.x0), upperBound(LOG.t, VIEW.x1) - 1]; }
+function sessionIdx() { return [lowerBound(LOG.t, VIEW.f0), upperBound(LOG.t, VIEW.f1) - 1]; }
+
+function normOf(name) {
+  if (normCache.has(name)) return normCache.get(name);
+  const v = CLEAN[name].v, [a, b] = sessionIdx();
+  let lo = Infinity, hi = -Infinity;
+  for (let i = a; i <= b; i++) { const x = v[i]; if (x < lo) lo = x; if (x > hi) hi = x; }
+  const r = Number.isFinite(lo) ? [lo, (hi - lo) || 1] : [0, 1];
+  normCache.set(name, r);
+  return r;
+}
+
+// ---------------------------------------------------------------------------
+// Drawing
+// ---------------------------------------------------------------------------
+function readTheme() {
+  const cs = getComputedStyle(document.documentElement);
+  const g = (n) => cs.getPropertyValue(n).trim();
+  TH = {
+    surface: g('--surface'), text1: g('--text-1'), text2: g('--text-2'), muted: g('--muted'),
+    grid: g('--grid'), axis: g('--axis'), accent: g('--accent'), wash: g('--wash'),
+    series: [1, 2, 3, 4, 5, 6, 7, 8].map((i) => g('--s' + i)),
+  };
+  THEME_VER++;
+}
+
+let drawPending = false;
+function requestDraw() {
+  if (drawPending) return;
+  drawPending = true;
+  requestAnimationFrame(() => { drawPending = false; drawAll(); });
+}
+function drawAll() {
+  if (!LOG) return;
+  drawOverview();
+  for (const g of GRAPHS) drawGraph(g);
+}
+
+function niceTicks(a, b, target) {
+  const raw = (b - a) / Math.max(1, target);
+  const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const r = raw / mag;
+  const step = (r <= 1 ? 1 : r <= 2 ? 2 : r <= 5 ? 5 : 10) * mag;
+  const ticks = [];
+  for (let k = Math.ceil(a / step - 1e-9); k * step <= b + step * 1e-9; k++) ticks.push(k * step);
+  return { ticks, step };
+}
+function tickFmt(v, step) {
+  const d = clamp(-Math.floor(Math.log10(step) + 1e-9), 0, 6);
+  return (Math.abs(v) < step * 1e-6 ? 0 : v).toFixed(d);
+}
+function padExt(lo, hi, frac, discrete) {
+  if (!Number.isFinite(lo) || !Number.isFinite(hi)) return [0, 1];
+  if (discrete) return [lo - 0.4, hi + 0.4];
+  if (hi === lo) { const d = Math.abs(lo) * 0.1 || 1; return [lo - d, hi + d]; }
+  const p = (hi - lo) * frac;
+  return [lo - p, hi + p];
+}
+function fitCanvas(cv, W, H, dpr) {
+  const w = Math.max(1, Math.round(W * dpr)), h = Math.max(1, Math.round(H * dpr));
+  if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return ctx;
+}
+
+function drawGraph(g) {
+  const r = g.cv.getBoundingClientRect();
+  const W = r.width, H = r.height, dpr = window.devicePixelRatio || 1;
+  if (W < 4 || H < 4) return;
+  const key = [W, H, dpr, DATA_VER, THEME_VER, VIEW.x0, VIEW.x1, g.x, g.ys.join('|'), g.norm, g.ymin, g.ymax,
+    CFG.marks, g.xy ? [g.xy.x0, g.xy.x1, g.xy.y0, g.xy.y1].join(',') : ''].join(';');
+  if (g.legendSig !== g.x + '|' + g.ys.join('|')) buildLegend(g);
+  if (key !== g.baseKey) { renderBase(g, W, H, dpr); g.baseKey = key; }
+  const ctx = fitCanvas(g.cv, W, H, dpr);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, g.cv.width, g.cv.height);
+  ctx.drawImage(g.base, 0, 0);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  drawOverlay(g, ctx);
+  updateLegendValues(g);
+}
+
+function renderBase(g, W, H, dpr) {
+  const cv = g.base || (g.base = document.createElement('canvas'));
+  const ctx = fitCanvas(cv, W, H, dpr);
+  ctx.clearRect(0, 0, W, H);
+  ctx.font = FONT;
+  const t = LOG.t;
+  const time = g.x === 'Time';
+  const xc = time ? null : CHMAP.get(g.x);
+  const X = time ? t : CLEAN[g.x].v;
+  const [j0, j1] = visIdx();
+  const series = g.ys.filter((n) => CHMAP.has(n)).map((name) => ({
+    name, c: CHMAP.get(name), v: CLEAN[name].v, flag: CLEAN[name].flag, color: TH.series[g.slots.get(name) ?? slotOf(name)],
+    nrm: g.norm ? normOf(name) : null,
+  }));
+  const Y = (s, i) => s.nrm ? (s.v[i] - s.nrm[0]) / s.nrm[1] * 100 : s.v[i];
+
+  const T = 18, B = 22, PH = Math.max(10, H - T - B);
+
+  let x0, x1;
+  if (time) { x0 = VIEW.x0; x1 = VIEW.x1; }
+  else if (g.xy) { x0 = g.xy.x0; x1 = g.xy.x1; }
+  else {
+    let lo = Infinity, hi = -Infinity;
+    for (let i = j0; i <= j1; i++) { const v = X[i]; if (v < lo) lo = v; if (v > hi) hi = v; }
+    [x0, x1] = padExt(lo, hi, 0.03, xc.discrete);
+  }
+
+  let y0, y1;
+  if (!time && g.xy) { y0 = g.xy.y0; y1 = g.xy.y1; }
+  else {
+    let lo = Infinity, hi = -Infinity;
+    for (const s of series) for (let i = j0; i <= j1; i++) { const v = Y(s, i); if (v < lo) lo = v; if (v > hi) hi = v; }
+    [y0, y1] = padExt(lo, hi, 0.06, series.length > 0 && !g.norm && series.every((s) => s.c.discrete));
+  }
+  const mlo = num(g.ymin), mhi = num(g.ymax);
+  if (mlo !== null) y0 = mlo;
+  if (mhi !== null) y1 = mhi;
+  if (!(y1 > y0)) y1 = y0 + 1;
+  if (!(x1 > x0)) x1 = x0 + 1;
+
+  // Y ticks (state channels get their names)
+  const labels = series.length === 1 && !g.norm && series[0].c.labels;
+  let yt;
+  if (labels) {
+    yt = [];
+    for (let v = Math.ceil(y0); v <= y1; v++) yt.push({ v, s: labels[v] !== undefined ? labels[v] : String(v) });
+  } else {
+    const nt = niceTicks(y0, y1, Math.max(2, Math.round(PH / 40)));
+    yt = nt.ticks.map((v) => ({ v, s: tickFmt(v, nt.step) }));
+  }
+  let lw = 0;
+  for (const k of yt) lw = Math.max(lw, ctx.measureText(k.s).width);
+  const L = Math.ceil(Math.max(30, lw) + 12);
+  const direct = time && series.length >= 2 && series.length <= 4;
+  let R = 12;
+  if (direct) { let w = 0; for (const s of series) w = Math.max(w, ctx.measureText(s.name).width); R = Math.ceil(w + 26); }
+  const PW = Math.max(10, W - L - R);
+  const sx = (v) => L + (v - x0) / (x1 - x0) * PW;
+  const sy = (v) => T + PH - (v - y0) / (y1 - y0) * PH;
+
+  // Grid + y labels
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = TH.grid;
+  ctx.beginPath();
+  for (const k of yt) { const y = Math.round(sy(k.v)) + 0.5; ctx.moveTo(L, y); ctx.lineTo(L + PW, y); }
+  const xt = niceTicks(x0, x1, Math.max(2, Math.round(PW / 90)));
+  if (!time) for (const v of xt.ticks) { const x = Math.round(sx(v)) + 0.5; ctx.moveTo(x, T); ctx.lineTo(x, T + PH); }
+  ctx.stroke();
+  ctx.fillStyle = TH.muted; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  for (const k of yt) ctx.fillText(k.s, L - 6, sy(k.v));
+  const units = [...new Set(series.map((s) => s.c.unit))];
+  const yUnit = g.norm ? '% of range' : units.length === 1 ? units[0] : '';
+  if (yUnit) { ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillText(yUnit, 6, 12); }
+
+  // X axis
+  ctx.strokeStyle = TH.axis; ctx.beginPath();
+  ctx.moveTo(L, T + PH + 0.5); ctx.lineTo(L + PW, T + PH + 0.5);
+  for (const v of xt.ticks) { const x = Math.round(sx(v)) + 0.5; ctx.moveTo(x, T + PH); ctx.lineTo(x, T + PH + 4); }
+  ctx.stroke();
+  const xTitle = time ? 's' : (xc.unit ? `${g.x} (${xc.unit})` : g.x);
+  ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'right'; ctx.fillStyle = TH.text2;
+  ctx.fillText(xTitle, L + PW, H - 5);
+  const titleW = ctx.measureText(xTitle).width;
+  ctx.textAlign = 'center'; ctx.fillStyle = TH.muted;
+  for (const v of xt.ticks) {
+    const x = sx(v), s = tickFmt(v, xt.step), w = ctx.measureText(s).width;
+    if (x + w / 2 > L + PW - titleW - 8 || x - w / 2 < 2) continue;
+    ctx.fillText(s, x, H - 5);
+  }
+
+  // Logger restarts
+  if (time && LOG.sessions.length > 1) {
+    ctx.save();
+    ctx.setLineDash([3, 3]); ctx.strokeStyle = TH.muted; ctx.fillStyle = TH.muted;
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    for (let k = 1; k < LOG.sessions.length; k++) {
+      const x = Math.round(sx(LOG.sessions[k].t0 - SESSION_GAP_S / 2)) + 0.5;
+      if (x < L || x > L + PW) continue;
+      ctx.beginPath(); ctx.moveTo(x, T); ctx.lineTo(x, T + PH); ctx.stroke();
+      ctx.fillText('restart', x + 4, T + 10);
+    }
+    ctx.restore();
+  }
+
+  // Data
+  ctx.save();
+  ctx.beginPath(); ctx.rect(L, T, PW, PH); ctx.clip();
+  const e0 = Math.max(0, j0 - 1), e1 = Math.min(LOG.N - 1, j1 + 1);
+  ctx.lineWidth = series.length > 3 ? 1.25 : 1.5;
+  ctx.lineJoin = 'round';
+  for (const s of series) {
+    ctx.strokeStyle = s.color; ctx.fillStyle = s.color;
+    if (time) strokeSeries(ctx, t, s, Y, e0, e1, sx, sy, PW, s.c.discrete);
+    else scatter(ctx, X, s, Y, j0, j1, sx, sy);
+  }
+  if (time && CFG.marks) {
+    ctx.strokeStyle = TH.text2; ctx.lineWidth = 1.25;
+    for (const s of series) {
+      ctx.beginPath();
+      let cnt = 0;
+      for (let i = j0; i <= j1 && cnt < 5000; i++) {
+        if (s.flag[i] < F_RANGE) continue;
+        cnt++;
+        const x = sx(t[i]), v = Y(s, i);
+        if (v === v) { const y = sy(v); ctx.moveTo(x - 3, y - 3); ctx.lineTo(x + 3, y + 3); ctx.moveTo(x + 3, y - 3); ctx.lineTo(x - 3, y + 3); }
+        else { ctx.moveTo(x, T + PH); ctx.lineTo(x, T + PH - 6); }
+      }
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+
+  // Direct labels at the right edge for 2-4 series
+  if (direct) {
+    const items = [];
+    for (const s of series) {
+      let v = NaN;
+      for (let i = j1; i >= j0; i--) { v = Y(s, i); if (v === v) break; }
+      if (v === v) items.push({ s, y: clamp(sy(v), T + 5, T + PH - 5) });
+    }
+    items.sort((a, b) => a.y - b.y);
+    for (let k = 1; k < items.length; k++) if (items[k].y - items[k - 1].y < 13) items[k].y = items[k - 1].y + 13;
+    const over = items.length ? items[items.length - 1].y - (T + PH - 5) : 0;
+    if (over > 0) for (const it of items) it.y -= over;
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.lineWidth = 2;
+    for (const it of items) {
+      ctx.strokeStyle = it.s.color;
+      ctx.beginPath(); ctx.moveTo(L + PW + 5, it.y); ctx.lineTo(L + PW + 15, it.y); ctx.stroke();
+      ctx.fillStyle = TH.text2; ctx.fillText(it.s.name, L + PW + 19, it.y);
+    }
+  }
+
+  if (!series.length) {
+    ctx.fillStyle = TH.muted; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('Pick a channel from “+ Channel” above', L + PW / 2, T + PH / 2);
+  }
+
+  g.geom = { time, L, T, PW, PH, x0, x1, y0, y1, j0, j1 };
+  g.series = series; g.Y = Y; g.X = X;
+
+  // Stats over the visible window, shown in the legend
+  for (const it of g.legendItems) {
+    const c = it.c, v = CLEAN[c.name].v, f = CLEAN[c.name].flag;
+    let lo = Infinity, hi = -Infinity, sum = 0, n = 0, rep = 0;
+    for (let i = j0; i <= j1; i++) {
+      const x = v[i];
+      if (f[i] >= F_RANGE) rep++;
+      if (x !== x) continue;
+      if (x < lo) lo = x; if (x > hi) hi = x; sum += x; n++;
+    }
+    let s = n ? (c.discrete ? `min ${fmtVal(c, lo)} · max ${fmtVal(c, hi)}`
+      : `min ${fmtVal(c, lo)} · avg ${(sum / n).toFixed(Math.max(c.dec || 0, 1))} · max ${fmtVal(c, hi)}`) : 'no data';
+    if (rep && !it.isX) s += ` · ${rep.toLocaleString()} replaced`;
+    it.stats.textContent = s;
+  }
+}
+
+// Min/max per pixel column once there are more points than pixels,
+// so a 30-minute log draws as fast as a 30-second one without hiding spikes.
+function strokeSeries(ctx, t, s, Y, a, b, sx, sy, PW, step) {
+  const brk = LOG.brk;
+  ctx.beginPath();
+  let pen = false;
+  if (b - a > PW * 3) {
+    let col = NaN, first = 0, last = 0, mn = 0, mx = 0;
+    const flush = () => {
+      if (col !== col) return;
+      if (pen) ctx.lineTo(col, sy(first)); else ctx.moveTo(col, sy(first));
+      ctx.lineTo(col, sy(mn)); ctx.lineTo(col, sy(mx)); ctx.lineTo(col, sy(last));
+      pen = true; col = NaN;
+    };
+    for (let i = a; i <= b; i++) {
+      const v = Y(s, i);
+      if (brk[i] || v !== v) { flush(); pen = false; if (v !== v) continue; }
+      const px = Math.round(sx(t[i]));
+      if (px !== col) { flush(); col = px; first = last = mn = mx = v; }
+      else { if (v < mn) mn = v; if (v > mx) mx = v; last = v; }
+    }
+    flush();
+  } else {
+    let py = 0;
+    for (let i = a; i <= b; i++) {
+      const v = Y(s, i);
+      if (v !== v) { pen = false; continue; }
+      if (brk[i]) pen = false;
+      const x = sx(t[i]), y = sy(v);
+      if (!pen) ctx.moveTo(x, y);
+      else { if (step) ctx.lineTo(x, py); ctx.lineTo(x, y); }
+      pen = true; py = y;
+    }
+  }
+  ctx.stroke();
+}
+
+function scatter(ctx, X, s, Y, a, b, sx, sy) {
+  ctx.globalAlpha = 0.6;
+  for (let i = a; i <= b; i++) {
+    const x = X[i], y = Y(s, i);
+    if (x !== x || y !== y) continue;
+    ctx.fillRect(sx(x) - 1.5, sy(y) - 1.5, 3, 3);
+  }
+  ctx.globalAlpha = 1;
+}
+
+function dot(ctx, x, y, color, r) {
+  ctx.beginPath(); ctx.arc(x, y, r + 2, 0, Math.PI * 2); ctx.fillStyle = TH.surface; ctx.fill();
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill();
+}
+
+function tag(ctx, text, cx, y, minX, maxX) {
+  ctx.font = FONT;
+  const w = ctx.measureText(text).width + 10;
+  const x = clamp(cx - w / 2, minX, maxX - w);
+  ctx.fillStyle = TH.text1;
+  ctx.beginPath();
+  if (ctx.roundRect) ctx.roundRect(x, y, w, 16, 3); else ctx.rect(x, y, w, 16);
+  ctx.fill();
+  ctx.fillStyle = TH.surface; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  ctx.fillText(text, x + 5, y + 8.5);
+}
+
+function drawOverlay(g, ctx) {
+  const G = g.geom;
+  if (!G) return;
+  const { L, T, PW, PH } = G;
+  const sx = (v) => L + (v - G.x0) / (G.x1 - G.x0) * PW;
+  const sy = (v) => T + PH - (v - G.y0) / (G.y1 - G.y0) * PH;
+  const i = CURSOR;
+  if (i >= 0 && i < LOG.N) {
+    if (G.time) {
+      const x = Math.round(sx(LOG.t[i])) + 0.5;
+      if (x >= L - 1 && x <= L + PW + 1) {
+        ctx.strokeStyle = TH.text2; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(x, T); ctx.lineTo(x, T + PH); ctx.stroke();
+        for (const s of g.series) {
+          const v = g.Y(s, i);
+          if (v !== v) continue;
+          const y = sy(v);
+          if (y >= T - 1 && y <= T + PH + 1) dot(ctx, x, y, s.color, 3.5);
+        }
+        tag(ctx, fmtTime(LOG.t[i]), x, T + PH + 2, 0, L + PW + 30);
+      }
+    } else if (i >= G.j0 && i <= G.j1) {
+      const xv = g.X[i];
+      for (const s of g.series) {
+        const yv = g.Y(s, i);
+        if (xv !== xv || yv !== yv) continue;
+        const x = sx(xv), y = sy(yv);
+        if (x >= L && x <= L + PW && y >= T && y <= T + PH) dot(ctx, x, y, s.color, 4.5);
+      }
+      tag(ctx, `t ${fmtTime(LOG.t[i])}`, L + PW, T + 2, L, L + PW - 2);
+    }
+  }
+  const d = g.drag;
+  if (d && d.mode === 'zoom') {
+    ctx.fillStyle = TH.wash; ctx.strokeStyle = TH.accent; ctx.lineWidth = 1;
+    const a = clamp(Math.min(d.p0.x, d.p1.x), L, L + PW), b = clamp(Math.max(d.p0.x, d.p1.x), L, L + PW);
+    if (G.time) { ctx.fillRect(a, T, b - a, PH); ctx.strokeRect(a + 0.5, T + 0.5, b - a, PH - 1); }
+    else {
+      const c = clamp(Math.min(d.p0.y, d.p1.y), T, T + PH), e = clamp(Math.max(d.p0.y, d.p1.y), T, T + PH);
+      ctx.fillRect(a, c, b - a, e - c); ctx.strokeRect(a + 0.5, c + 0.5, b - a, e - c);
+    }
+  }
+}
+
+function buildLegend(g) {
+  g.legendSig = g.x + '|' + g.ys.join('|');
+  g.legend.textContent = '';
+  g.legendItems = [];
+  const mk = (c, isX) => {
+    const key = isX ? el('span', { class: 'xk', text: 'X' })
+      : el('span', { class: 'key', style: `background:var(--s${(g.slots.get(c.name) ?? slotOf(c.name)) + 1})` });
+    const it = { c, isX, val: el('span', { class: 'val' }), stats: el('span', { class: 'stats' }) };
+    g.legend.append(el('span', { class: 'item' }, key, el('span', { class: 'name', text: c.name + (c.unit ? ` (${c.unit})` : '') }), it.val, it.stats));
+    g.legendItems.push(it);
+  };
+  if (g.x !== 'Time' && CHMAP.has(g.x)) mk(CHMAP.get(g.x), true);
+  for (const n of g.ys) if (CHMAP.has(n)) mk(CHMAP.get(n), false);
+  g.baseKey = '';   // stats are written during renderBase
+}
+
+function updateLegendValues(g) {
+  const i = CURSOR;
+  for (const it of g.legendItems) {
+    it.val.textContent = i >= 0 && i < LOG.N ? fmtVal(it.c, CLEAN[it.c.name].v[i]) : '';
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Pointer handling
+// ---------------------------------------------------------------------------
+function localPt(e, cv) { const r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+
+function wireCanvas(g) {
+  const cv = g.cv;
+  cv.addEventListener('pointermove', (e) => {
+    const p = localPt(e, cv);
+    if (g.drag) { dragMove(g, p); return; }
+    hover(g, p);
+  });
+  cv.addEventListener('pointerleave', () => { if (!g.drag) { CURSOR = -1; requestDraw(); } });
+  cv.addEventListener('pointerdown', (e) => {
+    if (!LOG || !g.geom || e.button === 2) return;
+    const p = localPt(e, cv);
+    const pan = e.shiftKey || e.button === 1;
+    const G = g.geom;
+    g.drag = { mode: pan ? 'pan' : 'zoom', p0: p, p1: p, v: { x0: G.time ? VIEW.x0 : G.x0, x1: G.time ? VIEW.x1 : G.x1, y0: G.y0, y1: G.y1 } };
+    cv.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+  const end = () => { if (!g.drag) return; dragEnd(g); g.drag = null; requestDraw(); };
+  cv.addEventListener('pointerup', end);
+  cv.addEventListener('pointercancel', () => { g.drag = null; requestDraw(); });
+  cv.addEventListener('wheel', (e) => onWheel(g, e), { passive: false });
+  cv.addEventListener('dblclick', () => { if (g.geom && g.geom.time) resetView(); else { g.xy = null; requestDraw(); } });
+}
+
+function hover(g, p) {
+  const G = g.geom;
+  if (!G) return;
+  if (G.time) {
+    CURSOR = p.x < G.L || p.x > G.L + G.PW ? -1 : nearestIdx(VIEW.x0 + (p.x - G.L) / G.PW * (VIEW.x1 - VIEW.x0));
+  } else {
+    const sx = (v) => G.L + (v - G.x0) / (G.x1 - G.x0) * G.PW;
+    const sy = (v) => G.T + G.PH - (v - G.y0) / (G.y1 - G.y0) * G.PH;
+    let best = -1, bd = 24 * 24;
+    for (const s of g.series) {
+      for (let i = G.j0; i <= G.j1; i++) {
+        const x = g.X[i], y = g.Y(s, i);
+        if (x !== x || y !== y) continue;
+        const dx = sx(x) - p.x, dy = sy(y) - p.y, d = dx * dx + dy * dy;
+        if (d < bd) { bd = d; best = i; }
+      }
+    }
+    CURSOR = best;
+  }
+  requestDraw();
+}
+
+function dragMove(g, p) {
+  const d = g.drag, G = g.geom;
+  d.p1 = p;
+  if (d.mode === 'pan') {
+    const dx = (p.x - d.p0.x) / G.PW * (d.v.x1 - d.v.x0);
+    if (G.time) setView(d.v.x0 - dx, d.v.x1 - dx);
+    else {
+      const dy = (p.y - d.p0.y) / G.PH * (d.v.y1 - d.v.y0);
+      g.xy = { x0: d.v.x0 - dx, x1: d.v.x1 - dx, y0: d.v.y0 + dy, y1: d.v.y1 + dy };
+    }
+  }
+  requestDraw();
+}
+
+function dragEnd(g) {
+  const d = g.drag, G = g.geom;
+  if (d.mode !== 'zoom') return;
+  const dxp = Math.abs(d.p1.x - d.p0.x), dyp = Math.abs(d.p1.y - d.p0.y);
+  const ix = (px) => G.x0 + (clamp(px, G.L, G.L + G.PW) - G.L) / G.PW * (G.x1 - G.x0);
+  const iy = (py) => G.y0 + (G.T + G.PH - clamp(py, G.T, G.T + G.PH)) / G.PH * (G.y1 - G.y0);
+  if (G.time) {
+    if (dxp > 4) setView(Math.min(ix(d.p0.x), ix(d.p1.x)), Math.max(ix(d.p0.x), ix(d.p1.x)));
+  } else if (dxp > 4 || dyp > 4) {
+    const xs = dxp > 4 ? [ix(d.p0.x), ix(d.p1.x)].sort((a, b) => a - b) : [G.x0, G.x1];
+    const ys = dyp > 4 ? [iy(d.p0.y), iy(d.p1.y)].sort((a, b) => a - b) : [G.y0, G.y1];
+    g.xy = { x0: xs[0], x1: xs[1], y0: ys[0], y1: ys[1] };
+  }
+}
+
+function onWheel(g, e) {
+  // Plain vertical scroll is left to the page so the graph stack stays scrollable;
+  // Ctrl/Alt + scroll (and trackpad pinch, which arrives as ctrl+wheel) zooms.
+  const G = g.geom;
+  if (!G) return;
+  let dy = e.deltaY, dx = e.deltaX;
+  if (e.deltaMode === 1) { dy *= 16; dx *= 16; }
+  const sideways = Math.abs(dx) > Math.abs(dy);
+  if (!e.ctrlKey && !e.altKey && !(sideways && G.time)) return;
+  e.preventDefault();
+  const p = localPt(e, g.cv);
+  if (G.time) {
+    const w = VIEW.x1 - VIEW.x0;
+    if (sideways) { const sh = dx / G.PW * w; setView(VIEW.x0 + sh, VIEW.x1 + sh); return; }
+    const f = Math.exp(dy * 0.002);
+    const tc = VIEW.x0 + (clamp(p.x, G.L, G.L + G.PW) - G.L) / G.PW * w;
+    setView(tc - (tc - VIEW.x0) * f, tc + (VIEW.x1 - tc) * f);
+  } else {
+    const D = g.xy || G, f = Math.exp(dy * 0.002);
+    const xc = D.x0 + (clamp(p.x, G.L, G.L + G.PW) - G.L) / G.PW * (D.x1 - D.x0);
+    const yc = D.y0 + (G.T + G.PH - clamp(p.y, G.T, G.T + G.PH)) / G.PH * (D.y1 - D.y0);
+    g.xy = { x0: xc - (xc - D.x0) * f, x1: xc + (D.x1 - xc) * f, y0: yc - (yc - D.y0) * f, y1: yc + (D.y1 - yc) * f };
+    requestDraw();
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Overview strip
+// ---------------------------------------------------------------------------
+const OV = { cv: null, base: null, key: '', drag: null };
+function ovChannel() {
+  const g = GRAPHS.find((x) => x.x === 'Time' && x.ys.length);
+  return g ? g.ys[0] : (CH[0] && CH[0].name);
+}
+function drawOverview() {
+  const cv = OV.cv, r = cv.getBoundingClientRect();
+  const W = r.width, H = r.height, dpr = window.devicePixelRatio || 1;
+  if (W < 4) return;
+  const name = ovChannel();
+  const key = [W, H, dpr, DATA_VER, THEME_VER, name, VIEW.f0, VIEW.f1].join(';');
+  const sx = (v) => (v - VIEW.f0) / (VIEW.f1 - VIEW.f0) * W;
+  if (key !== OV.key) {
+    OV.key = key;
+    $('#ovName').textContent = name || '';
+    const b = OV.base || (OV.base = document.createElement('canvas'));
+    const bc = fitCanvas(b, W, H, dpr);
+    bc.clearRect(0, 0, W, H);
+    if (name) {
+      const s = { v: CLEAN[name].v, c: CHMAP.get(name) };
+      const [a, z] = sessionIdx();
+      let lo = Infinity, hi = -Infinity;
+      for (let i = a; i <= z; i++) { const v = s.v[i]; if (v < lo) lo = v; if (v > hi) hi = v; }
+      const [y0, y1] = padExt(lo, hi, 0.08, s.c.discrete);
+      const sy = (v) => H - 2 - (v - y0) / ((y1 - y0) || 1) * (H - 4);
+      bc.strokeStyle = colorOf(name); bc.lineWidth = 1;
+      strokeSeries(bc, LOG.t, s, (q, i) => q.v[i], a, z, sx, sy, W, s.c.discrete);
+    }
+  }
+  const ctx = fitCanvas(cv, W, H, dpr);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  ctx.drawImage(OV.base, 0, 0);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const xa = sx(VIEW.x0), xb = sx(VIEW.x1);
+  ctx.globalAlpha = 0.75; ctx.fillStyle = TH.surface;
+  ctx.fillRect(0, 0, xa, H); ctx.fillRect(xb, 0, W - xb, H);
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = TH.accent; ctx.lineWidth = 1;
+  ctx.strokeRect(Math.round(xa) + 0.5, 0.5, Math.max(1, Math.round(xb - xa) - 1), H - 1);
+  if (CURSOR >= 0) {
+    const x = Math.round(sx(LOG.t[CURSOR])) + 0.5;
+    ctx.strokeStyle = TH.text2; ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+  }
+}
+function wireOverview() {
+  const cv = OV.cv;
+  const tAt = (p) => VIEW.f0 + clamp(p.x / cv.getBoundingClientRect().width, 0, 1) * (VIEW.f1 - VIEW.f0);
+  const W = () => cv.getBoundingClientRect().width;
+  const xOf = (t) => (t - VIEW.f0) / (VIEW.f1 - VIEW.f0) * W();
+  cv.addEventListener('pointerdown', (e) => {
+    if (!LOG || e.button !== 0) return;
+    const p = localPt(e, cv), t = tAt(p);
+    const zoomed = VIEW.x1 - VIEW.x0 < (VIEW.f1 - VIEW.f0) * 0.999;
+    if (zoomed && p.x >= xOf(VIEW.x0) - 4 && p.x <= xOf(VIEW.x1) + 4) OV.drag = { mode: 'move', off: t - VIEW.x0, w: VIEW.x1 - VIEW.x0 };
+    else OV.drag = { mode: 'new', t0: t, px0: p.x, moved: false };
+    cv.setPointerCapture(e.pointerId);
+  });
+  cv.addEventListener('pointermove', (e) => {
+    if (!LOG) return;
+    const p = localPt(e, cv), t = tAt(p), d = OV.drag;
+    if (!d) {
+      const inWin = p.x >= xOf(VIEW.x0) - 4 && p.x <= xOf(VIEW.x1) + 4 && VIEW.x1 - VIEW.x0 < (VIEW.f1 - VIEW.f0) * 0.999;
+      cv.style.cursor = inWin ? 'grab' : 'crosshair';
+      CURSOR = nearestIdx(t); requestDraw();
+      return;
+    }
+    if (d.mode === 'move') setView(t - d.off, t - d.off + d.w);
+    else if (Math.abs(p.x - d.px0) > 3) { d.moved = true; setView(Math.min(d.t0, t), Math.max(d.t0, t)); }
+  });
+  cv.addEventListener('pointerup', (e) => {
+    const d = OV.drag; OV.drag = null;
+    if (d && d.mode === 'new' && !d.moved) {
+      const t = tAt(localPt(e, cv)), w = VIEW.x1 - VIEW.x0;
+      if (w < (VIEW.f1 - VIEW.f0) * 0.999) setView(t - w / 2, t + w / 2);
+    }
+  });
+  cv.addEventListener('pointerleave', () => { if (!OV.drag) { CURSOR = -1; requestDraw(); } });
+  cv.addEventListener('dblclick', resetView);
+  cv.addEventListener('wheel', (e) => {
+    if (!LOG) return;
+    e.preventDefault();
+    const t = tAt(localPt(e, cv)), f = Math.exp((e.deltaMode === 1 ? 16 : 1) * e.deltaY * 0.002);
+    setView(t - (t - VIEW.x0) * f, t + (VIEW.x1 - t) * f);
+  }, { passive: false });
+  new ResizeObserver(requestDraw).observe(cv);
+}
+
+// ---------------------------------------------------------------------------
+// Table view + export
+// ---------------------------------------------------------------------------
+let tableTimer = 0;
+function scheduleTable() { if (!tableOpen) return; clearTimeout(tableTimer); tableTimer = setTimeout(renderTable, 150); }
+function renderTable() {
+  if (!tableOpen || !LOG) return;
+  const [j0, j1] = visIdx();
+  const CAP = 1000, n = Math.max(0, j1 - j0 + 1), end = Math.min(j1, j0 + CAP - 1);
+  const tbl = $('#tbl'); tbl.textContent = '';
+  const hr = el('tr', {}, el('th', { text: 'Time (s)' }), el('th', { text: `${LOG.timeName} (raw)` }));
+  for (const c of CH) hr.append(el('th', { text: c.name + (c.unit ? ` (${c.unit})` : '') }));
+  tbl.append(el('thead', {}, hr));
+  const body = el('tbody');
+  for (let i = j0; i <= end; i++) {
+    const tr = el('tr', {}, el('td', { text: LOG.t[i].toFixed(3) }), el('td', { text: String(LOG.tRaw[i]) }));
+    for (const c of CH) {
+      const cl = CLEAN[c.name], f = cl.flag[i];
+      const td = el('td', { text: fmtVal(c, cl.v[i]) });
+      if (!c.math && f >= F_RANGE) { td.className = 'rep'; td.title = `Replaced. Logged value: ${LOG.raw[c.name][i]}`; }
+      else if (!c.math && f === F_UNWRAP) { td.className = 'unw'; td.title = `Logged as ${LOG.raw[c.name][i]}, read as signed`; }
+      tr.append(td);
+    }
+    body.append(tr);
+  }
+  tbl.append(body);
+  $('#tableNote').textContent = n > CAP
+    ? `Showing the first ${CAP.toLocaleString()} of ${n.toLocaleString()} rows in view. Zoom in to see the rest. Italic × = replaced, dotted = read as signed.`
+    : `${n.toLocaleString()} rows in view. Italic × = replaced, dotted = read as signed.`;
+}
+
+function exportCSV() {
+  if (!LOG) return;
+  const [a, b] = sessionIdx();
+  const out = [['Time_raw', 'Time_s', ...CH.map((c) => c.name)].join(',')];
+  for (let i = a; i <= b; i++) {
+    const row = [LOG.tRaw[i], +LOG.t[i].toFixed(4)];
+    for (const c of CH) { const v = CLEAN[c.name].v[i]; row.push(Number.isFinite(v) ? +v.toPrecision(8) : ''); }
+    out.push(row.join(','));
+  }
+  const blob = new Blob([out.join('\n') + '\n'], { type: 'text/csv' });
+  const a2 = el('a', { href: URL.createObjectURL(blob), download: LOG.fileName.replace(/\.[^.]*$/, '') + '_clean.csv' });
+  document.body.append(a2); a2.click(); a2.remove();
+  setTimeout(() => URL.revokeObjectURL(a2.href), 1000);
+}
+
+// ---------------------------------------------------------------------------
+// Wiring
+// ---------------------------------------------------------------------------
+function applyTheme(mode) {
+  if (mode === 'auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', mode);
+  try { localStorage.setItem(THEME_KEY, mode); } catch (e) { /* ignore */ }
+  $('#themeBtn').textContent = `Theme: ${mode}`;
+  readTheme();
+  requestDraw();
+}
+
+function init() {
+  OV.cv = $('#ov');
+  const themeMode = (() => { try { return localStorage.getItem(THEME_KEY) || 'auto'; } catch (e) { return 'auto'; } })();
+  applyTheme(['auto', 'light', 'dark'].includes(themeMode) ? themeMode : 'auto');
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { readTheme(); requestDraw(); });
+  $('#themeBtn').addEventListener('click', () => {
+    const modes = ['auto', 'light', 'dark'];
+    const cur = document.documentElement.getAttribute('data-theme') || 'auto';
+    applyTheme(modes[(modes.indexOf(cur) + 1) % 3]);
+  });
+
+  const fileIn = $('#fileIn');
+  $('#openBtn').addEventListener('click', () => fileIn.click());
+  $('#openBtn2').addEventListener('click', () => fileIn.click());
+  fileIn.addEventListener('change', () => { openFile(fileIn.files[0]); fileIn.value = ''; });
+  let dragDepth = 0;
+  window.addEventListener('dragenter', (e) => { e.preventDefault(); dragDepth++; document.body.classList.add('dragging'); });
+  window.addEventListener('dragleave', () => { if (--dragDepth <= 0) { dragDepth = 0; document.body.classList.remove('dragging'); } });
+  window.addEventListener('dragover', (e) => e.preventDefault());
+  window.addEventListener('drop', (e) => {
+    e.preventDefault(); dragDepth = 0; document.body.classList.remove('dragging');
+    if (e.dataTransfer.files.length) openFile(e.dataTransfer.files[0]);
+  });
+
+  $('#sideBtn').addEventListener('click', () => { document.body.classList.toggle('noside'); requestDraw(); });
+  // Narrow screens show the panel as a drawer over the graphs: start it shut,
+  // and shut it again on a tap outside it.
+  const narrow = matchMedia('(max-width: 760px)');
+  if (narrow.matches) document.body.classList.add('noside');
+  $('#main').addEventListener('pointerdown', () => { if (narrow.matches) document.body.classList.add('noside'); });
+  $('#sessSel').addEventListener('change', () => setSession(+$('#sessSel').value));
+  $('#resetBtn').addEventListener('click', resetView);
+  const newGraph = () => { const g = addGraph({ x: 'Time', ys: [] }); g.root.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); g.addSel.focus(); saveSoon(); };
+  $('#addGraphBtn').addEventListener('click', newGraph);
+  $('#addGraphBtn2').addEventListener('click', newGraph);
+  $('#tableBtn').addEventListener('click', () => {
+    tableOpen = !tableOpen;
+    $('#tableBtn').setAttribute('aria-pressed', String(tableOpen));
+    $('#tableWrap').hidden = !tableOpen;
+    if (tableOpen) { renderTable(); $('#tableWrap').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+  });
+  $('#exportBtn').addEventListener('click', exportCSV);
+
+  $('#fillSel').addEventListener('change', () => { CFG.fill = $('#fillSel').value; reclean(); saveSoon(); });
+  $('#marksChk').addEventListener('change', () => { CFG.marks = $('#marksChk').checked; requestDraw(); saveSoon(); });
+  $('#spikeK').addEventListener('input', () => { const k = num($('#spikeK').value); if (k && k > 0) { CFG.spikeK = k; recleanSoon(); saveSoon(); } });
+  $('#cleanReset').addEventListener('click', () => {
+    OVR = {};
+    for (const c of CH) if (!c.math) CFG.ch[c.name] = defaultChCfg(c);
+    renderCleanPanel(); reclean(); saveSoon();
+  });
+  $('#mathForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!LOG) return;
+    const inp = $('#mathIn');
+    try { addMathFromText(inp.value); inp.value = ''; $('#mathErr').textContent = ''; renderMathList(); }
+    catch (err) { $('#mathErr').textContent = err.message; }
+  });
+
+  wireOverview();
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { for (const g of GRAPHS) g.drag = null; requestDraw(); }
+  });
+}
+
+init();
+// Handy for scripting from the devtools console: fsaeViewer.loadText(csvString, 'name.csv')
+window.fsaeViewer = { loadText };
+})();
+</script>
+</body>
+</html>

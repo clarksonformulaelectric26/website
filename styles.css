@@ -177,6 +177,67 @@ a {
   color: var(--clarkson-gold);
 }
 
+/* The telemetry viewer link: a members' tool rather than a section of the
+   site, so it trails the five section links behind a hairline in the muted
+   text colour. That colour carries the step down on its own: at the other
+   links' 0.85 opacity it would fall under 4.5:1 on the green bar. The rule is
+   a pseudo-element, centred in the nav gap, so the hover underline's
+   border-color never reaches it. */
+.site-header nav .nav-tool {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+.site-header nav .nav-tool::before {
+  content: "";
+  position: absolute;
+  top: 15%;
+  bottom: 15%;
+  left: -0.75rem;
+  border-left: 1px solid var(--line-strong);
+}
+
+/* A trace line, stroked like the site's other drawn icons. */
+.nav-tool-icon {
+  flex: none;
+  width: 16px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Between the phone menu and 1000px the wordmark, the five section links and
+   a labelled sixth no longer fit on one row, and the nav would drop to a
+   second one. The label steps out of sight there (still the link's name to a
+   screen reader, and the title gives it a tooltip), leaving the glyph, and
+   the gaps close up by the glyph's width so the row breaks no sooner than it
+   did with five links. */
+@media (min-width: 769px) and (max-width: 999px) {
+  .site-header nav {
+    column-gap: 1rem;
+  }
+
+  .site-header nav .nav-tool::before {
+    left: -0.5rem;
+  }
+
+  .nav-tool-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
 /* ---------- Phone menu toggle ----------
 
    Off above 768px, where the wordmark and the five links still fit on one
@@ -291,6 +352,22 @@ a {
     padding: 0.85rem 0;
     text-align: right;
     opacity: 1;
+  }
+
+  /* In the menu the telemetry link's rule turns to run across the top of its
+     row, splitting it from the section links above. It is a flex row for its
+     glyph, so it is pushed right by justify-content, not text-align. */
+  .nav-menu[open] ~ nav .nav-tool {
+    justify-content: flex-end;
+  }
+
+  .nav-menu[open] ~ nav .nav-tool::before {
+    top: 0;
+    bottom: auto;
+    left: 0;
+    right: 0;
+    border-left: 0;
+    border-top: 1px solid var(--line-soft);
   }
 
   /* Over the hero the header is a transparent gradient, which would leave an
