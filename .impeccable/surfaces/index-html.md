@@ -78,8 +78,8 @@ review, the verdict, docs/DESIGN.md, and every shipping raster carrying its prov
 - A **Sponsors** wall closes the page. The header nav carries all four sections in page
   order (Our Car / Subteams / Leadership / Sponsors) and is now identical on every page
   in the site, with interior pages linking to `index.html#…`. The leads section's anchor
-  is `#leadership`. Sponsor logos are ranked by plate width alone — the
-  support levels are never named on the page or in class names — and each dark logo is
+  is `#leadership`. Sponsor logos all share one plate size in alphabetical
+  order — the team dropped support levels — and each logo is
   backlit by alpha-tracing `drop-shadow` halo passes rather than boxed on a white plate.
   See the Sponsor Logo component and the Backlight-Not-Box Rule in docs/DESIGN.md.
 

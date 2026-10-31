@@ -41,7 +41,7 @@ have.
   `styles.css`, and `script.js` sit at the project root; subteam pages live in
   `subteams/`, lead bio pages in `leads/`, and these docs in `docs/`.
 - Sponsors are recognized on the home page by logo, linked to the sponsor's own site.
-  Support levels are reflected only by logo size, never named on the page. No formal
+  Every sponsor gets the same size logo; the team dropped support levels. No formal
   sponsor-recognition agreement (required sizes, placements, or wording) has been
   confirmed — revisit if the team signs one.
 - No university accessibility policy beyond general good practice has been confirmed.
@@ -61,8 +61,8 @@ have.
 
 - Real team photo: `images/TeamPicture.jpeg` (used as the homepage hero background).
 - Real car photos: `images/Accumulator.jpg`, `images/formulacarglamourshot.png`.
-- Real sponsor logos: `images/sponsors/<level>/*` (platinum, gold, silver). The directory
-  names are the team's own filing; they are not exposed in the markup or on the page.
+- Real sponsor logos: `images/sponsors/*`, one flat folder, each trimmed to its artwork on a
+  transparent background.
 - No competition results, testimonials, or press exist yet — future work must not
   fabricate these.
 

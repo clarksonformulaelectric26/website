@@ -141,9 +141,9 @@ The page then closes on a **Contact / Join** pair. The two share one hairline (i
 
 *Our Subteams* renders as a responsive card grid (`repeat(auto-fill, minmax(240px, 1fr))`, 1.5rem gap) — one "spec plate" per subteam, each stamped with a two-letter/two-digit spec code (e.g. `HV·01`) in its top-left corner.
 
-*Leadership* runs two rows: the team officers, then the subteam leads below. Every lead card is the same size — unlike the sponsor wall, rank here is carried by position and by the role line, not by scale. Each row is a centered grid of fixed tracks (`repeat(auto-fit, 210px)`, 1.75rem gap) — `auto-fit` rather than `auto-fill` so the empty tracks collapse and `justify-content: center` has free space to work with, which keeps a partly-filled row deliberate instead of stranding one card at the left edge. Each card links to a lead detail page laid out portrait-left / bio-right on the same 940px measure as Our Car, stacking under 760px.
+*Leadership* runs two rows: the team officers, then the subteam leads below. Every lead card is the same size; rank here is carried by position and by the role line, not by scale. Each row is a centered grid of fixed tracks (`repeat(auto-fit, 210px)`, 1.75rem gap) — `auto-fit` rather than `auto-fill` so the empty tracks collapse and `justify-content: center` has free space to work with, which keeps a partly-filled row deliberate instead of stranding one card at the left edge. Each card links to a lead detail page laid out portrait-left / bio-right on the same 940px measure as Our Car, stacking under 760px.
 
-*Sponsors* is a centered, bottom-aligned flex wrap rather than a grid: logo footprints come in three widths and rows are allowed to mix them and wrap where they land. The mixing is deliberate — a size-sorted grid of rows would draw the support levels back onto the page, which is exactly what the sizes alone are meant to convey.
+*Sponsors* is a centered flex wrap of same-width plates in alphabetical order, rather than a grid, so a short last row sits in the middle of the wall instead of hanging off the left edge. There are no support levels: every sponsor gets the same footprint.
 
 ## Elevation & Depth
 
@@ -227,9 +227,9 @@ Every real photograph on the site is mounted as a figure, not dropped in loose: 
 ### Sponsor Logo (signature component)
 A sponsor is a link stacking an invisible 3:2 frame over a mono name line. Three things carry the whole component:
 
-- **Size is the only ranking.** Plate width — `--lg` `clamp(9rem, 21vw, 16.25rem)`, `--md` `clamp(7.25rem, 16vw, 12.5rem)`, `--sm` `clamp(6rem, 13vw, 10.25rem)` — is the sole signal of support level. The levels are never named on the page, and the classes are written as sizes rather than as tier names so the markup doesn't leak them either.
+- **One size for everyone.** Every plate is `clamp(8rem, 16vw, 13rem)` wide with `0.75rem` of padding inside the frame — five across at full width, two to a row on a phone. There are no support levels on the page or in the markup.
 - **The frame is invisible.** `.sponsor-mark` draws nothing; it only reserves each logo the same 3:2 footprint (with `min-height: 0`, since a column flex item's content-based minimum otherwise lets a tall logo override the aspect ratio). The image is sized to the frame's content box and letterboxed with `object-fit: contain` — left at its intrinsic size, a tall logo still forces a container taller than its own row.
-- **The halo.** Every sponsor mark is dark artwork — near-black wordmarks, deep red, navy — so on Chassis Ink each is lit from behind rather than boxed. Three stacked zero-offset `drop-shadow()` passes do different jobs: a tight 1px opaque pass cuts the edge, a 3px mid pass carries the glow, a 12px faint pass keeps it from reading as a hard sticker outline. The light is Warm Plate White (`#f3f0e6`), never pure white.
+- **The halo.** Most sponsor marks are dark artwork — near-black wordmarks, deep red, navy — so on Chassis Ink each is lit from behind rather than boxed. Three stacked zero-offset `drop-shadow()` passes do different jobs: a tight 1px opaque pass cuts the edge, a 3px mid pass carries the glow, a 12px faint pass keeps it from reading as a hard sticker outline. The light is Warm Plate White (`#f3f0e6`), never pure white.
 
 **Hover:** the outermost halo pass warms to Hazard Gold (`rgba(255,205,0,0.45)`), the name goes gold, and the whole unit lifts `translateY(-3px)` — the same move the spec plates and the back link make. Names are held at `min-height: 2.7em` (two lines) so a wrapping name can't shove its own logo up out of the row's shelf line.
 
@@ -245,7 +245,7 @@ A sponsor is a link stacking an invisible 3:2 frame over a mono name line. Three
 
 ### Don't:
 - **Don't** add glass/blur panels or soft glowing shadows — this world is flat and ruled, not glassy. The sponsor halo is the one exception and stays scoped to sponsor logos: it has zero offset (so it is backlight, not elevation) and exists only because foreign dark artwork can't be recolored to suit the ground.
-- **Don't** put sponsor logos on white plates or name the support levels in the markup or on the page — plate width is the entire ranking device.
+- **Don't** put sponsor logos on white plates or give one sponsor a bigger plate than another — every logo gets a transparent background and the same footprint.
 - **Don't** introduce a third dark neutral for backgrounds; every dark surface is Chassis Ink, Panel, Panel Raised, or one of the two Clarkson greens.
 - **Don't** set long-form body copy in uppercase, even in the mono label font — reserve uppercase for short labels and headings (the logo wordmark is the one deliberate exception).
 - **Don't** use repeating-stripe gradients as generic surface decoration; the diagonal hazard-stripe trim is earned specifically because it depicts real hazard tape, not because stripes look technical.

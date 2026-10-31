@@ -949,25 +949,24 @@ a {
   border-top: 1px solid var(--line-soft);
 }
 
-/* Flex rather than grid, and centered: the plates are three different widths,
-   so rows are allowed to mix sizes and wrap where they land. That mixing is
-   deliberate — a size-sorted grid of rows would draw the support levels back
-   onto the page, which is exactly what the sizes alone are meant to convey. */
+/* Flex rather than grid, and centered: every plate is the same width, so a
+   short last row sits in the middle of the wall instead of hanging off the
+   left edge the way a grid's leftover cells would. */
 .sponsor-wall {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  /* Bottom-aligned so the names in a row share one line and the plates sit on
-     a common shelf, whatever mix of sizes lands there. */
-  align-items: flex-end;
   gap: 2rem 1.25rem;
 }
 
+/* One plate size for everyone. The clamp fits five across at full width and
+   still keeps two to a row on a phone. */
 .sponsor {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.7rem;
+  width: clamp(8rem, 16vw, 13rem);
   transition: transform 0.2s ease;
 }
 
@@ -988,6 +987,9 @@ a {
      content-based: without this, a tall logo overrides the aspect-ratio and
      stands taller than the rest of its row. */
   min-height: 0;
+  /* Breathing room inside each frame, so neighbouring logos (and their halos)
+     never crowd each other. */
+  padding: 0.75rem;
 }
 
 /* Sized to the frame's content box and letterboxed by object-fit rather than
@@ -995,7 +997,7 @@ a {
    forces a flex container taller than its own aspect-ratio, which put one
    logo out of line with the rest of its row.
 
-   Every sponsor mark is dark artwork — near-black wordmarks, deep red, navy —
+   Most sponsor marks are dark artwork — near-black wordmarks, deep red, navy —
    so on the ink ground each one is lit from behind instead of being boxed:
    zero-offset drop-shadows trace the logo's own alpha channel, so the halo
    follows the letterforms rather than a rectangle. Three stacked passes do
@@ -1039,35 +1041,6 @@ a {
 
 .sponsor:hover .sponsor-name {
   color: var(--clarkson-gold);
-}
-
-/* Plate width is the only thing that separates the levels. The clamp keeps the
-   three sizes proportional all the way down to a phone, where the smallest
-   pairing still fits two to a row. */
-.sponsor--lg {
-  width: clamp(9rem, 21vw, 16.25rem);
-}
-
-.sponsor--md {
-  width: clamp(7.25rem, 16vw, 12.5rem);
-}
-
-.sponsor--sm {
-  width: clamp(6rem, 13vw, 10.25rem);
-}
-
-/* Breathing room inside each frame, so neighbouring logos (and their halos)
-   never crowd each other. */
-.sponsor--lg .sponsor-mark {
-  padding: 0.8rem;
-}
-
-.sponsor--md .sponsor-mark {
-  padding: 0.65rem;
-}
-
-.sponsor--sm .sponsor-mark {
-  padding: 0.55rem;
 }
 
 /* ---------- Contact (home, the band above the Join button) ---------- */
